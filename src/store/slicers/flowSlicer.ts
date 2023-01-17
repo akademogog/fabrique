@@ -38,16 +38,16 @@ const initialState: any = {
       nodes: [
         {
           id: "10",
-          type: "textUpdater",
+          type: "customNode",
           data: {
-            label: "label",
+            label: "label 1",
             inputs: [
               { id: "1", type: "float", value: "" },
-              { id: "2", type: "float", value: "" },
+              { id: "2", type: "string", value: "" },
             ],
             outputs: [
-              { id: "1", type: "string", value: "" },
-              { id: "2", type: "string", value: "" },
+              { id: "1", type: "float", value: "" },
+              { id: "2", type: "string", value: "", color: 'red' },
             ],
           },
           position: { x: 100, y: 50 },
@@ -55,19 +55,19 @@ const initialState: any = {
         },
         {
           id: "11",
-          type: "textUpdater",
+          type: "customNode",
           data: {
-            label: "label",
+            label: "label 2",
             inputs: [
               { id: "1", type: "float", value: "" },
-              { id: "2", type: "float", value: "" },
-            ],
-            outputs: [
-              { id: "1", type: "string", value: "" },
               { id: "2", type: "string", value: "" },
             ],
+            outputs: [
+              { id: "1", type: "float", value: "" },
+              { id: "2", type: "string", value: "", color: 'red' },
+            ],
           },
-          position: { x: 100, y: 50 },
+          position: { x: 500, y: 50 },
           name: "Parser",
         },
       ],
@@ -90,6 +90,32 @@ export const counterSlice = createSlice({
         if (actor.id === payload.actorId) {
           actor.nodes = payload.nodes;
           actor.edges = payload.edges;
+        }
+        return actor;
+      });
+    },
+    appendNodeToStore: (state, action: PayloadAction<any>) => {
+      const payload = action.payload;
+      state.actors = state.actors.map((actor) => {
+        if (actor.id === payload.actorId) {
+          actor.nodes = [
+            ...payload.nodes,
+            {
+              id: payload.id,
+              position: payload.position,
+              type: payload.type,
+              data: payload.data,
+            },
+          ];
+        }
+        return actor;
+      });
+    },
+    removeNodeFromStore: (state, action: PayloadAction<any>) => {
+      const payload = action.payload;
+      state.actors = state.actors.map((actor) => {
+        if (actor.id === payload.actorId) {
+          actor.nodes = actor.nodes.filter(node => node.id !== payload.nodeId)
         }
         return actor;
       });
@@ -144,6 +170,8 @@ export const {
   changeNodeData,
   changeSelectedNode,
   appendNodeInput,
+  appendNodeToStore,
+  removeNodeFromStore,
 } = counterSlice.actions;
 
 export default counterSlice.reducer;

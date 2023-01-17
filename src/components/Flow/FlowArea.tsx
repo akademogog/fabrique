@@ -15,9 +15,14 @@ import ReactFlow, {
 } from "reactflow";
 // 👇 you need to import the reactflow styles
 import "reactflow/dist/style.css";
-import { useAppDispatch } from "../../store/hooks";
-import { changeSelectedNode, synchronizeStore } from "../../store/slicers/flowSlicer";
-import ConstantsNode from "../ConstantsNode/ConstantsNode";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import {
+  appendNodeToStore,
+  changeSelectedNode,
+  removeNodeFromStore,
+  synchronizeStore,
+} from "../../store/slicers/flowSlicer";
+import CustomNode from "../CustomNode/CustomNode";
 
 type FlowProps = {
   actorId: string | number;
@@ -25,8 +30,20 @@ type FlowProps = {
   storeEdges: [];
 };
 
+const defaultCustomNode = {
+  label: "defaultNode",
+  inputs: [],
+  outputs: [],
+};
+
+const forbiddenСonnections = {
+  'float': ['string', 'array'],
+  'string': ['float', 'array']
+}
+
 const FlowArea: FC<FlowProps> = ({ actorId, storeNodes, storeEdges }) => {
   const dispatch = useAppDispatch();
+  const currentSelectedNode = useAppSelector((state) => state.flow.currentSelectedNode);
 
   useEffect(() => {
     setNodes(storeNodes);
@@ -35,9 +52,10 @@ const FlowArea: FC<FlowProps> = ({ actorId, storeNodes, storeEdges }) => {
 
   const [nodes, setNodes] = useState<Node[]>(storeNodes);
   const [edges, setEdges] = useState<Edge[]>(storeEdges);
-  const nodeTypes = useMemo(() => ({ textUpdater: ConstantsNode }), []);
+  const nodeTypes = useMemo(() => ({ customNode: CustomNode }), []);
 
-  const [isShowMenu, setIsShowMenu] = useState(false);
+  const [isShowPaneMenu, setIsShowPaneMenu] = useState(false);
+  const [isShowNodeMenu, setIsShowNodeMenu] = useState(false);
 
   const [viewportPosition, setViewportPosition] = useState({
     x: 0,
@@ -48,11 +66,22 @@ const FlowArea: FC<FlowProps> = ({ actorId, storeNodes, storeEdges }) => {
     x: 0,
     y: 0,
   });
-  const getMouseViewportPosition = (e: React.MouseEvent) => {
+  const getMouseViewportPosition = (
+    e: React.MouseEvent,
+    menuType: string,
+    node: Node
+  ) => {
     e.preventDefault();
     let x = e.pageX,
       y = e.pageY;
-    setIsShowMenu(true);
+    if (menuType === "pane") {
+      setIsShowNodeMenu(false);
+      setIsShowPaneMenu(true);
+    }
+    if (menuType === "node") {
+      setIsShowPaneMenu(false);
+      setIsShowNodeMenu(node);
+    }
     setMouseViewportPosition({ x, y });
     if (viewportPosition) {
       x = (x - viewportPosition.x) / viewportPosition.zoom;
@@ -73,24 +102,41 @@ const FlowArea: FC<FlowProps> = ({ actorId, storeNodes, storeEdges }) => {
     [setEdges]
   );
   const onConnect = useCallback(
-    (connection: Connection) => setEdges((eds) => addEdge(connection, eds)),
+    (connection: Connection) => {
+      const targetNode = nodes.find(el => el.id === connection.target);
+      const targetInput = targetNode.data.inputs.find(el => el.id === connection.targetHandle);
+      const sourseNode = nodes.find(el => el.id === connection.source);
+      const sourseOutput = sourseNode.data.outputs.find(el => el.id === connection.sourceHandle);
+      if (!forbiddenСonnections[targetInput.type].find(e => e === sourseOutput.type)) {
+        setEdges((eds) => addEdge(connection, eds));
+      }
+    },
     [setEdges]
   );
   const appendNode = (e: React.MouseEvent, type: string, data: object) => {
     const { x, y } = getMouseViewportPosition(e);
-    setNodes([
-      ...nodes,
-      {
+    dispatch(
+      appendNodeToStore({
+        nodes,
+        actorId,
         id: uuid(),
         position: { x, y },
         type,
         data,
-      },
-    ]);
-    setIsShowMenu(!isShowMenu);
+      })
+    );
+    setIsShowNodeMenu(false);
+    setIsShowPaneMenu(false);
   };
   const onNodeClick = (_: React.MouseEvent, node: object) => {
-    dispatch(changeSelectedNode({areaId: actorId, nodeId: node.id}))
+    dispatch(changeSelectedNode({ areaId: actorId, nodeId: node.id }));
+  };
+  const removeNode = () => {
+    if (currentSelectedNode.areaId === actorId && currentSelectedNode.nodeId === isShowNodeMenu.id) {
+      dispatch(changeSelectedNode({ areaId: '', nodeId: '' }));
+    }
+    dispatch(removeNodeFromStore({ actorId, nodeId: isShowNodeMenu.id }));
+    setIsShowNodeMenu(false);
   };
 
   return (
@@ -99,7 +145,8 @@ const FlowArea: FC<FlowProps> = ({ actorId, storeNodes, storeEdges }) => {
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
-        nodeOrigin={[0.5, 0.5]}
+        connectionLineStyle={{ strokeWidth: 6, stroke: "steelblue" }}
+        nodeOrigin={[0.5, 0]}
         fitView
         onInit={(reactFlowInstance) =>
           setViewportPosition(reactFlowInstance.getViewport())
@@ -113,13 +160,16 @@ const FlowArea: FC<FlowProps> = ({ actorId, storeNodes, storeEdges }) => {
         onEdgeClick={(_, edge) =>
           setEdges(edges.filter((e) => e.id !== edge.id))
         }
-        onPaneContextMenu={(e) => getMouseViewportPosition(e)}
+        onPaneContextMenu={(e) => getMouseViewportPosition(e, "pane")}
+        onNodeContextMenu={(e, node) =>
+          getMouseViewportPosition(e, "node", node)
+        }
         onMoveEnd={(_, viewport) => setViewportPosition(viewport)}
         onNodeClick={onNodeClick}
       >
         <MiniMap />
         <Controls />
-        {isShowMenu && (
+        {isShowPaneMenu && (
           <div
             className="select"
             style={{
@@ -128,34 +178,73 @@ const FlowArea: FC<FlowProps> = ({ actorId, storeNodes, storeEdges }) => {
             }}
           >
             <button
-              onClick={(e) => appendNode(e, "input", { label: "inputLabel" })}
-            >
-              Input
-            </button>
-            <button
               onClick={(e) =>
-                appendNode(e, "textUpdater", {
-                  label: "label",
-                  inputs: [
-                    { id: uuid(), type: "float", value: "" },
-                    { id: uuid(), type: "float", value: "" },
-                  ],
-                  outputs: [
-                    { id: uuid(), type: "string", value: "" },
-                    { id: uuid(), type: "string", value: "" },
-                  ],
+                appendNode(e, "customNode", {
+                  label: "ArrayToArray",
+                  inputs: [],
+                  outputs: [],
                 })
               }
             >
-              Output
+              ArrayToArray
             </button>
             <button
               onClick={(e) =>
-                appendNode(e, "default", { label: "defaultLabel" })
+                appendNode(e, "customNode", {
+                  label: "ArrayToElement",
+                  inputs: [],
+                  outputs: [],
+                })
               }
             >
-              Default
+              ArrayToElement
             </button>
+            <button
+              onClick={(e) =>
+                appendNode(e, "customNode", {
+                  label: "Constants",
+                  inputs: [],
+                  outputs: [],
+                })
+              }
+            >
+              Constants
+            </button>
+            <button
+              onClick={(e) =>
+                appendNode(e, "customNode", {
+                  label: "Destructurer",
+                  inputs: [],
+                  outputs: [],
+                })
+              }
+            >
+              Destructurer
+            </button>
+            <button
+              onClick={(e) =>
+                appendNode(e, "customNode", {
+                  label: "ElementToArray",
+                  inputs: [],
+                  outputs: [],
+                })
+              }
+            >
+              ElementToArray
+            </button>
+          </div>
+        )}
+
+        {isShowNodeMenu && (
+          <div
+            className="select"
+            style={{
+              left: mouseViewportPosition.x,
+              top: mouseViewportPosition.y,
+            }}
+          >
+            <button onClick={(e) => removeNode()}>Delete</button>
+            <button onClick={(e) => appendNode(e, isShowNodeMenu.type, isShowNodeMenu.data)}>Clone</button>
           </div>
         )}
         <Background />
