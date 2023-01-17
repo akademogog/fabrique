@@ -1,0 +1,42 @@
+@import './assets/css/normalize.scss';
+
+.leftHandle {
+  position: relative;
+  display: flex;
+}
+
+.leftHandleCircle {
+  position: relative;
+  transform: translate(-50%, 50%);
+  left: 0px;
+  top: 0;
+  box-sizing: border-box;
+  width: 10px;
+  height: 10px;
+}
+
+.rightHandle {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.rightHandleCircle {
+  position: relative;
+  transform: translate(50%, 50%);
+  left: 0px;
+  top: 0;
+  box-sizing: border-box;
+  width: 10px;
+  height: 10px;
+}
+
+.customNodeLabel {
+  padding: 5px;
+  margin: 0 0 10px;
+}
+
+.targetBlock {
+  display: flex;
+  flex-direction: column;
+}

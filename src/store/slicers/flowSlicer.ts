@@ -1,47 +1,149 @@
-import { createSlice } from '@reduxjs/toolkit'
-import type { PayloadAction } from '@reduxjs/toolkit'
+import { createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
 
-const initialState: any = [
-  {
-    blockId: '123',
-    nodes: [
-      { id: '1', position: { x: 100, y: 50 }, data: { label: '1' } },
-      { id: '2', position: { x: 100, y: 150 }, data: { label: '2' } }
-    ],
-    edges: [{ id: 'e1-2', source: '1', target: '2' }],
-  }
-];
+const initialState: any = {
+  id: "pipeline@1.0.0",
+  nodes: [
+    {
+      id: 1,
+      data: {
+        name: "Actor",
+        ports_in: [],
+        ports_out: [],
+        description: "",
+        schema_: "",
+        type_: "Actor",
+      },
+      position: { x: 100, y: 50 },
+      name: "Actor",
+    },
+    {
+      id: 2,
+      data: {
+        name: "Actor",
+        ports_in: [],
+        ports_out: [],
+        description: "",
+        schema_: "",
+        type_: "Actor",
+      },
+      position: { x: 100, y: 50 },
+      name: "Actor",
+    },
+  ],
+  edges: [{ id: "e1-2", source: "1", target: "2" }],
+  actors: [
+    {
+      id: "actor@1.0.0",
+      nodes: [
+        {
+          id: "10",
+          type: "textUpdater",
+          data: {
+            label: "label",
+            inputs: [
+              { id: "1", type: "float", value: "" },
+              { id: "2", type: "float", value: "" },
+            ],
+            outputs: [
+              { id: "1", type: "string", value: "" },
+              { id: "2", type: "string", value: "" },
+            ],
+          },
+          position: { x: 100, y: 50 },
+          name: "Parser",
+        },
+        {
+          id: "11",
+          type: "textUpdater",
+          data: {
+            label: "label",
+            inputs: [
+              { id: "1", type: "float", value: "" },
+              { id: "2", type: "float", value: "" },
+            ],
+            outputs: [
+              { id: "1", type: "string", value: "" },
+              { id: "2", type: "string", value: "" },
+            ],
+          },
+          position: { x: 100, y: 50 },
+          name: "Parser",
+        },
+      ],
+      edges: [{ id: "e10-11", source: "10", target: "11" }],
+    },
+  ],
+  currentSelectedNode: {
+    areaId: "",
+    nodeId: "",
+  },
+};
 
 export const counterSlice = createSlice({
-  name: 'counter',
+  name: "counter",
   initialState,
   reducers: {
     synchronizeStore: (state, action: PayloadAction<any>) => {
-      state = state.map((e: any) => {
-        if (e.blockId === action.payload.blockId) {
-          e.nodes = action.payload.nodes;
-          e.edges = action.payload.edges;
+      const payload = action.payload;
+      state.actors = state.actors.map((actor: any) => {
+        if (actor.id === payload.actorId) {
+          actor.nodes = payload.nodes;
+          actor.edges = payload.edges;
         }
-        return e;
-      })
+        return actor;
+      });
     },
-    changeNodeData: (state, action: PayloadAction<any>) => {      
-      state = state.map((e: any) => {        
-        if (e.blockId === action.payload.blockId) {          
-          e.nodes = e.nodes.map((node: any) => {
-            if (node.id === action.payload.id) {
-              node.data = action.payload.data;
-              console.log(node.data);
-            }            
+    changeNodeData: (state, action: PayloadAction<any>) => {
+      const payload = action.payload;
+      state.actors = state.actors.map((actor) => {
+        if (actor.id === payload.areaId) {
+          actor.nodes.map((node) => {
+            if (node.id === payload.nodeId) {
+              node.data[payload.type].map((input) => {
+                if (input.id === payload.inputId) {
+                  input.value = payload.value;
+                }
+                return input;
+              });
+            }
             return node;
           });
         }
-        return e;
-      })
-    }
+        return actor;
+      });
+    },
+    appendNodeInput: (state, action: PayloadAction<any>) => {
+      const payload = action.payload;
+      state.actors = state.actors.map((actor) => {
+        if (actor.id === payload.areaId) {
+          actor.nodes.map((node) => {
+            if (node.id === payload.nodeId) {
+              node.data[payload.type] = [
+                ...node.data[payload.type],
+                payload.input,
+              ];
+            }
+            return node;
+          });
+        }
+        return actor;
+      });
+    },
+    changeSelectedNode: (state, action: PayloadAction<any>) => {
+      state.currentSelectedNode = {
+        areaId: action.payload.areaId,
+        nodeId: action.payload.nodeId,
+      };
+    },
   },
-})
+});
 
-export const { synchronizeStore, changeNodeData } = counterSlice.actions
+export const {
+  synchronizeStore,
+  changeNodeData,
+  changeSelectedNode,
+  appendNodeInput,
+} = counterSlice.actions;
 
-export default counterSlice.reducer
+export default counterSlice.reducer;

@@ -1,28 +1,37 @@
-import { useCallback, useState } from 'react';
-import { Handle, Position } from 'reactflow';
-import { useAppDispatch } from '../../store/hooks';
-import { changeNodeData } from '../../store/slicers/flowSlicer';
+import { Handle, Position } from "reactflow";
 
-const ConstantsNode = ({ id, data }) => {
-  const dispatch = useAppDispatch();
-  const onChange = useCallback((e) => {
-    dispatch(changeNodeData({
-      blockId: data.blockId,
-      id,
-      data: {...data, ['value']: e.target.value},
-    }));
-  }, []);
-
+const ConstantsNode = ({ data }) => {
   return (
     <>
-      <Handle type="target" position={Position.Top} />
-      <div style={{padding: '20px', backgroundColor: '#fff', border: '1px solid #000'}}>
-        <label htmlFor="text">Text:</label>
-        <input id="text" name="text" onChange={onChange} value={data.value}/>
+      <div style={{ backgroundColor: "#fff", border: "1px solid #000" }}>
+        <p className="customNodeLabel">{data.label}</p>
+
+        {data.outputs.map((e) => (
+          <div className="rightHandle" key={e.id}>
+            <span>{e.value}</span>
+            <Handle
+              id={e.id}
+              className="rightHandleCircle"
+              type="source"
+              position={Position.Right}
+            />
+          </div>
+        ))}
+        
+        {data.inputs.map((e) => (
+          <div className="leftHandle" key={e.id}>
+            <Handle
+              id={e.id}
+              className="leftHandleCircle"
+              type="target"
+              position={Position.Left}
+            />
+            <span>{e.value}</span>
+          </div>
+        ))}
       </div>
-      <Handle type="source" position={Position.Bottom} id="a" />
     </>
   );
-}
+};
 
-export default ConstantsNode
+export default ConstantsNode;
