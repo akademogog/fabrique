@@ -30,20 +30,49 @@ type FlowProps = {
   storeEdges: [];
 };
 
-const defaultCustomNode = {
-  label: "defaultNode",
-  inputs: [],
-  outputs: [],
-};
+const defaultCustomNode = [
+  {
+    label: "ArrayToArray",
+    name: "Array To Array",
+    inputs: [],
+    outputs: [],
+  },
+  {
+    label: "ArrayToElement",
+    name: "Array To Element",
+    inputs: [],
+    outputs: [],
+  },
+  {
+    label: "Constants",
+    name: "Constants",
+    inputs: [],
+    outputs: [],
+  },
+  {
+    label: "Destructurer",
+    name: "Destructurer",
+    inputs: [],
+    outputs: [],
+  },
+  {
+    label: "ElementToArray",
+    name: "Element To Array",
+    inputs: [],
+    outputs: [],
+  },
+];
 
 const forbiddenСonnections = {
-  'float': ['string', 'array'],
-  'string': ['float', 'array']
-}
+  float: ["string", "array"],
+  string: ["float", "array"],
+};
 
 const FlowArea: FC<FlowProps> = ({ actorId, storeNodes, storeEdges }) => {
   const dispatch = useAppDispatch();
-  const currentSelectedNode = useAppSelector((state) => state.flow.currentSelectedNode);
+  const currentSelectedNode = useAppSelector(
+    (state) => state.flow.currentSelectedNode
+  );
 
   useEffect(() => {
     setNodes(storeNodes);
@@ -103,11 +132,19 @@ const FlowArea: FC<FlowProps> = ({ actorId, storeNodes, storeEdges }) => {
   );
   const onConnect = useCallback(
     (connection: Connection) => {
-      const targetNode = nodes.find(el => el.id === connection.target);
-      const targetInput = targetNode.data.inputs.find(el => el.id === connection.targetHandle);
-      const sourseNode = nodes.find(el => el.id === connection.source);
-      const sourseOutput = sourseNode.data.outputs.find(el => el.id === connection.sourceHandle);
-      if (!forbiddenСonnections[targetInput.type].find(e => e === sourseOutput.type)) {
+      const targetNode = nodes.find((el) => el.id === connection.target);
+      const targetInput = targetNode.data.inputs.find(
+        (el) => el.id === connection.targetHandle
+      );
+      const sourseNode = nodes.find((el) => el.id === connection.source);
+      const sourseOutput = sourseNode.data.outputs.find(
+        (el) => el.id === connection.sourceHandle
+      );
+      if (
+        !forbiddenСonnections[targetInput.type].find(
+          (e) => e === sourseOutput.type
+        )
+      ) {
         setEdges((eds) => addEdge(connection, eds));
       }
     },
@@ -126,18 +163,25 @@ const FlowArea: FC<FlowProps> = ({ actorId, storeNodes, storeEdges }) => {
         data,
       })
     );
-    setIsShowNodeMenu(false);
-    setIsShowPaneMenu(false);
+    closeAllMenus();
   };
   const onNodeClick = (_: React.MouseEvent, node: object) => {
     dispatch(changeSelectedNode({ areaId: actorId, nodeId: node.id }));
+    closeAllMenus();
   };
   const removeNode = () => {
-    if (currentSelectedNode.areaId === actorId && currentSelectedNode.nodeId === isShowNodeMenu.id) {
-      dispatch(changeSelectedNode({ areaId: '', nodeId: '' }));
+    if (
+      currentSelectedNode.areaId === actorId &&
+      currentSelectedNode.nodeId === isShowNodeMenu.id
+    ) {
+      dispatch(changeSelectedNode({ areaId: "", nodeId: "" }));
     }
     dispatch(removeNodeFromStore({ actorId, nodeId: isShowNodeMenu.id }));
     setIsShowNodeMenu(false);
+  };
+  const closeAllMenus = () => {
+    setIsShowNodeMenu(false);
+    setIsShowPaneMenu(false);
   };
 
   return (
@@ -158,94 +202,62 @@ const FlowArea: FC<FlowProps> = ({ actorId, storeNodes, storeEdges }) => {
         onNodeDragStop={() =>
           dispatch(synchronizeStore({ actorId, nodes, edges }))
         }
-        onEdgeClick={(_, edge) =>
-          setEdges(edges.filter((e) => e.id !== edge.id))
-        }
+        onEdgeClick={(_, edge) => {
+          setEdges(edges.filter((e) => e.id !== edge.id));
+          closeAllMenus();
+        }}
         onPaneContextMenu={(e) => getMouseViewportPosition(e, "pane")}
         onNodeContextMenu={(e, node) =>
           getMouseViewportPosition(e, "node", node)
         }
         onMoveEnd={(_, viewport) => setViewportPosition(viewport)}
         onNodeClick={onNodeClick}
+        onPaneClick={closeAllMenus}
       >
         <MiniMap />
         <Controls />
         {isShowPaneMenu && (
           <div
-            className="select"
+            className="menu"
             style={{
               left: mouseViewportPosition.x,
               top: mouseViewportPosition.y,
             }}
           >
-            <button
-              onClick={(e) =>
-                appendNode(e, "customNode", {
-                  label: "ArrayToArray",
-                  inputs: [],
-                  outputs: [],
-                })
-              }
-            >
-              ArrayToArray
-            </button>
-            <button
-              onClick={(e) =>
-                appendNode(e, "customNode", {
-                  label: "ArrayToElement",
-                  inputs: [],
-                  outputs: [],
-                })
-              }
-            >
-              ArrayToElement
-            </button>
-            <button
-              onClick={(e) =>
-                appendNode(e, "customNode", {
-                  label: "Constants",
-                  inputs: [],
-                  outputs: [],
-                })
-              }
-            >
-              Constants
-            </button>
-            <button
-              onClick={(e) =>
-                appendNode(e, "customNode", {
-                  label: "Destructurer",
-                  inputs: [],
-                  outputs: [],
-                })
-              }
-            >
-              Destructurer
-            </button>
-            <button
-              onClick={(e) =>
-                appendNode(e, "customNode", {
-                  label: "ElementToArray",
-                  inputs: [],
-                  outputs: [],
-                })
-              }
-            >
-              ElementToArray
-            </button>
+            {
+              defaultCustomNode.map(nodeDatas => (
+                <button
+                  onClick={(e) =>
+                    appendNode(e, "customNode", {
+                      label: nodeDatas.label,
+                      inputs: nodeDatas.inputs,
+                      outputs: nodeDatas.outputs,
+                    })
+                  }
+                >
+                  {nodeDatas.name}
+                </button>
+              ))
+            }
           </div>
         )}
 
         {isShowNodeMenu && (
           <div
-            className="select"
+            className="menu"
             style={{
               left: mouseViewportPosition.x,
               top: mouseViewportPosition.y,
             }}
           >
             <button onClick={(e) => removeNode()}>Delete</button>
-            <button onClick={(e) => appendNode(e, isShowNodeMenu.type, isShowNodeMenu.data)}>Clone</button>
+            <button
+              onClick={(e) =>
+                appendNode(e, isShowNodeMenu.type, isShowNodeMenu.data)
+              }
+            >
+              Clone
+            </button>
           </div>
         )}
         <Background />

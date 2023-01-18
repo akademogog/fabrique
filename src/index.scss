@@ -4,3 +4,26 @@
   stroke: steelblue;
   stroke-width: 6
 }
+
+.menu {
+  border-radius: 5px;
+  overflow: hidden;
+  position: absolute;
+  z-index: 10;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+
+  button {
+    border: none;
+    background-color: rgba(110, 136, 255, 0.8);
+    border-bottom: 1px solid rgba(69, 103, 255, 0.8);
+    color: #fff;
+    padding: 4px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba(130, 153, 255, 0.8);
+    }
+  }
+}
