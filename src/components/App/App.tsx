@@ -6,7 +6,7 @@ import { NodesConfig } from "../NodesConfig";
 
 function App() {
   const actors = useAppSelector((state: RootState) => state.flow.actors);
-  const currentSelectedNode = useAppSelector((state: RootState) => state.flow.currentSelectedNode);
+  const {areaId, nodeId} = useAppSelector((state: RootState) => state.flow.currentSelectedNode);
 
   return (
     <div className="App">
@@ -17,7 +17,7 @@ function App() {
             storeNodes={actor.nodes}
             storeEdges={actor.edges}
           />
-          <NodesConfig currentSelectedNode={currentSelectedNode} />
+          <NodesConfig areaId={areaId} nodeId={nodeId}  />
         </div>
       ))}
     </div>

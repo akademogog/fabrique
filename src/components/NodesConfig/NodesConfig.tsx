@@ -3,20 +3,22 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import uuid from "react-uuid";
 import style from "./NodesConfig.module.scss";
 import { appendNodeInput, changeNodeData } from "@/store/slicers/flowSlicer";
-import { NodeInputType, Node } from "@/types/node.types";
+import { NodeInputType, Node, SelectedNode } from "@/types/node.types";
 
-export const NodesConfig: React.FC<any> = ({ currentSelectedNode }) => {
+interface NodesConfigProps extends SelectedNode {}
+
+export const NodesConfig: React.FC<NodesConfigProps> = ({ areaId, nodeId }) => {
   const dispatch = useAppDispatch();
   const actor = useAppSelector((state) =>
-    state.flow.actors.find((actor) => actor.id === currentSelectedNode.areaId)
+    state.flow.actors.find((actor) => actor.id === areaId)
   );
-  const selectedNode: Node | undefined = actor && actor.nodes?.find((node) => node.id === currentSelectedNode.nodeId);
+  const selectedNode: Node | undefined = actor && actor.nodes?.find((node) => node.id === nodeId);
 
   const onInput = (e: any, id: string, type: NodeInputType) => {
     dispatch(
       changeNodeData({
-        areaId: currentSelectedNode.areaId,
-        nodeId: currentSelectedNode.nodeId,
+        areaId: areaId,
+        nodeId: nodeId,
         inputId: id,
         value: e.target.value,
         type,
@@ -26,8 +28,8 @@ export const NodesConfig: React.FC<any> = ({ currentSelectedNode }) => {
   const appendInput = (type: NodeInputType) => {
     dispatch(
       appendNodeInput({
-        areaId: currentSelectedNode.areaId,
-        nodeId: currentSelectedNode.nodeId,
+        areaId: areaId,
+        nodeId: nodeId,
         type,
         input: { id: uuid(), type: "float", value: "" }
       })
