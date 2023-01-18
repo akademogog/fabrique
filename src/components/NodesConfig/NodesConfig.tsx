@@ -1,17 +1,18 @@
 import React from "react";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import uuid from "react-uuid";
-import style from "./NodeDatas.module.scss";
-import { appendNodeInput, changeNodeData } from "../../store/slicers/flowSlicer";
+import style from "./NodesConfig.module.scss";
+import { appendNodeInput, changeNodeData } from "@/store/slicers/flowSlicer";
+import { NodeInputType, Node } from "@/types/node.types";
 
-const NodeDatas = ({ currentSelectedNode }) => {
+export const NodesConfig: React.FC<any> = ({ currentSelectedNode }) => {
   const dispatch = useAppDispatch();
   const actor = useAppSelector((state) =>
     state.flow.actors.find((actor) => actor.id === currentSelectedNode.areaId)
   );
-  const selectedNode = actor && actor.nodes.find((node) => node.id === currentSelectedNode.nodeId);
+  const selectedNode: Node | undefined = actor && actor.nodes?.find((node) => node.id === currentSelectedNode.nodeId);
 
-  const onInput = (e, id, type) => {
+  const onInput = (e: any, id: string, type: NodeInputType) => {
     dispatch(
       changeNodeData({
         areaId: currentSelectedNode.areaId,
@@ -22,13 +23,13 @@ const NodeDatas = ({ currentSelectedNode }) => {
       })
     );
   };
-  const appendInput = (type) => {
+  const appendInput = (type: NodeInputType) => {
     dispatch(
       appendNodeInput({
         areaId: currentSelectedNode.areaId,
         nodeId: currentSelectedNode.nodeId,
         type,
-        input: { id: uuid(), type: "float", value: "" },
+        input: { id: uuid(), type: "float", value: "" }
       })
     );
   };
@@ -42,12 +43,12 @@ const NodeDatas = ({ currentSelectedNode }) => {
               <div className={style.nodeDatasTitle}>
                 <h3>General</h3>
               </div>
-              <p>id: {selectedNode.id}</p>
-              <p>type: {selectedNode.type}</p>
+              <p>id: {selectedNode?.id}</p>
+              <p>type: {selectedNode?.type}</p>
               <label>
                 <input type="text" placeholder="name" />
               </label>
-              <textarea name="" cols="30" rows="2"></textarea>
+              <textarea name="" cols={30} rows={2}></textarea>
             </div>
             <div className={style.nodeDatasInputs}>
               <div className={style.nodeDatasTitle}>
@@ -76,7 +77,7 @@ const NodeDatas = ({ currentSelectedNode }) => {
             <div className={style.nodeDatasOutputs}>
               <div className={style.nodeDatasTitle}>
                 <h3>Outputs</h3>
-                <button onClick={e => appendInput('outputs')}>append</button>
+                <button onClick={() => appendInput('outputs')}>append</button>
               </div>
               {selectedNode &&
                 selectedNode.data.outputs.map((input) => (
@@ -103,5 +104,3 @@ const NodeDatas = ({ currentSelectedNode }) => {
     </div>
   )
 };
-
-export default NodeDatas;

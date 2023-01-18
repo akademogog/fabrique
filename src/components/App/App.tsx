@@ -1,8 +1,8 @@
 import "./App.scss";
-import { useAppSelector } from "../../store/hooks";
-import { RootState } from "../../store/store";
+import { useAppSelector } from "@/store/hooks";
+import { RootState } from "@/store/store";
 import FlowArea from "../Flow/FlowArea";
-import NodeDatas from "../NodeDatas/NodeDatas";
+import { NodesConfig } from "../NodesConfig";
 
 function App() {
   const actors = useAppSelector((state: RootState) => state.flow.actors);
@@ -17,7 +17,7 @@ function App() {
             storeNodes={actor.nodes}
             storeEdges={actor.edges}
           />
-          <NodeDatas currentSelectedNode={currentSelectedNode} />
+          <NodesConfig currentSelectedNode={currentSelectedNode} />
         </div>
       ))}
     </div>

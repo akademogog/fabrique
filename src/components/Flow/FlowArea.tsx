@@ -15,13 +15,13 @@ import ReactFlow, {
 } from "reactflow";
 // 👇 you need to import the reactflow styles
 import "reactflow/dist/style.css";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   appendNodeToStore,
   changeSelectedNode,
   removeNodeFromStore,
   synchronizeStore,
-} from "../../store/slicers/flowSlicer";
+} from "@/store/slicers/flowSlicer";
 import CustomNode from "../CustomNode/CustomNode";
 
 type FlowProps = {
@@ -114,6 +114,7 @@ const FlowArea: FC<FlowProps> = ({ actorId, storeNodes, storeEdges }) => {
     [setEdges]
   );
   const appendNode = (e: React.MouseEvent, type: string, data: object) => {
+    console.log(data)
     const { x, y } = getMouseViewportPosition(e);
     dispatch(
       appendNodeToStore({
