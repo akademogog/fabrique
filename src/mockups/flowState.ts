@@ -1,38 +1,64 @@
+import { Node } from "@/types/node.types";
 import { Edge } from "reactflow";
 import { Actor } from "../types/actor.types";
 
-export const nodes = [
+export const nodes: Node[] = [
   {
-    id: 1,
+    id: "1",
+    type: "customNode",
     data: {
-      name: "Actor",
-      ports_in: [],
-      ports_out: [],
-      description: "",
-      schema_: "",
-      type_: "Actor",
+      label: "label 1",
+      inputs: [
+        { id: "1", type: "float", value: "" },
+        { id: "2", type: "string", value: "" },
+      ],
+      outputs: [
+        { id: "1", type: "float", value: "" },
+        { id: "2", type: "string", value: "", color: "red" },
+      ],
     },
     position: { x: 100, y: 50 },
-    name: "Actor",
+    name: "Parser",
   },
   {
-    id: 2,
+    id: "2",
+    type: "customNode",
     data: {
-      name: "Actor",
-      ports_in: [],
-      ports_out: [],
-      description: "",
-      schema_: "",
-      type_: "Actor",
+      label: "label 1",
+      inputs: [
+        { id: "1", type: "float", value: "" },
+        { id: "2", type: "string", value: "" },
+      ],
+      outputs: [
+        { id: "1", type: "float", value: "" },
+        { id: "2", type: "string", value: "", color: "red" },
+      ],
     },
-    position: { x: 100, y: 50 },
-    name: "Actor",
+    position: { x: 500, y: 50 },
+    name: "Parser",
   },
+  {
+    id: "3",
+    type: "customNode",
+    data: {
+      label: "label 1",
+      inputs: [
+        { id: "1", type: "float", value: "" },
+        { id: "2", type: "string", value: "" },
+      ],
+      outputs: [
+        { id: "1", type: "float", value: "" },
+        { id: "2", type: "string", value: "", color: "red" },
+      ],
+    },
+    position: { x: 900, y: 50 },
+    name: "Parser",
+  }
 ];
 export const edges: Edge[] = [{ id: "e1-2", source: "1", target: "2" }];
 export const actors: Actor[] = [
   {
-    id: "actor@1.0.0",
+    id: "1",
     nodes: [
       {
         id: "10",
@@ -71,4 +97,26 @@ export const actors: Actor[] = [
     ],
     edges: [{ id: "e10-11", source: "10", target: "11" }],
   },
+  {
+    id: "2",
+    nodes: [
+      {
+        id: "10",
+        type: "customNode",
+        data: {
+          label: "label 1",
+          inputs: [
+            { id: "1", type: "float", value: "" },
+            { id: "2", type: "string", value: "" },
+          ],
+          outputs: [
+            { id: "1", type: "float", value: "" },
+            { id: "2", type: "string", value: "", color: "red" },
+          ],
+        },
+        position: { x: 100, y: 50 },
+        name: "Parser",
+      },
+    ],
+  }
 ];

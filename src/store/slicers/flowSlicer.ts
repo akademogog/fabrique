@@ -13,7 +13,7 @@ import { actors, edges, nodes } from "@/mockups/flowState";
 
 interface InitialState {
   id: string;
-  nodes: any[];
+  nodes: Node[];
   edges: Edge[];
   actors: Actor[];
   currentSelectedNode: { areaId: string; nodeId: string };
@@ -75,7 +75,7 @@ export const counterSlice = createSlice({
         nodeId: string;
       }>
     ) => {
-      const payload = action.payload;
+      const payload = action.payload;      
       state.actors = state.actors.map((actor: Actor) => {
         if (actor.id === payload.actorId && actor.nodes) {
           actor.nodes = actor.nodes.filter(
