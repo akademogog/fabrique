@@ -1,79 +1,29 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
+import { Actor } from "@/types/actor.types";
+import {
+  NodeInputType,
+  Node,
+  NodeControlInput,
+  NodeControlOutput,
+  NodeData,
+} from "@/types/node.types";
+import { Edge, Position } from "@/types/global.types";
+import { actors, edges, nodes } from "@/mockups/flowState";
 
-const initialState: any = {
+interface InitialState {
+  id: string;
+  nodes: any[];
+  edges: Edge[];
+  actors: Actor[];
+  currentSelectedNode: { areaId: string; nodeId: string };
+}
+
+const initialState: InitialState = {
   id: "pipeline@1.0.0",
-  nodes: [
-    {
-      id: 1,
-      data: {
-        name: "Actor",
-        ports_in: [],
-        ports_out: [],
-        description: "",
-        schema_: "",
-        type_: "Actor",
-      },
-      position: { x: 100, y: 50 },
-      name: "Actor",
-    },
-    {
-      id: 2,
-      data: {
-        name: "Actor",
-        ports_in: [],
-        ports_out: [],
-        description: "",
-        schema_: "",
-        type_: "Actor",
-      },
-      position: { x: 100, y: 50 },
-      name: "Actor",
-    },
-  ],
-  edges: [{ id: "e1-2", source: "1", target: "2" }],
-  actors: [
-    {
-      id: "actor@1.0.0",
-      nodes: [
-        {
-          id: "10",
-          type: "customNode",
-          data: {
-            label: "label 1",
-            inputs: [
-              { id: "1", type: "float", value: "" },
-              { id: "2", type: "string", value: "" },
-            ],
-            outputs: [
-              { id: "1", type: "float", value: "" },
-              { id: "2", type: "string", value: "", color: 'red' },
-            ],
-          },
-          position: { x: 100, y: 50 },
-          name: "Parser",
-        },
-        {
-          id: "11",
-          type: "customNode",
-          data: {
-            label: "label 2",
-            inputs: [
-              { id: "1", type: "float", value: "" },
-              { id: "2", type: "string", value: "" },
-            ],
-            outputs: [
-              { id: "1", type: "float", value: "" },
-              { id: "2", type: "string", value: "", color: 'red' },
-            ],
-          },
-          position: { x: 500, y: 50 },
-          name: "Parser",
-        },
-      ],
-      edges: [{ id: "e10-11", source: "10", target: "11" }],
-    },
-  ],
+  nodes: nodes,
+  edges: edges,
+  actors: actors,
   currentSelectedNode: {
     areaId: "",
     nodeId: "",
@@ -84,9 +34,16 @@ export const counterSlice = createSlice({
   name: "counter",
   initialState,
   reducers: {
-    synchronizeStore: (state, action: PayloadAction<any>) => {
+    synchronizeStore: (
+      state,
+      action: PayloadAction<{
+        actorId: string;
+        nodes: Node[];
+        edges: Edge[];
+      }>
+    ) => {
       const payload = action.payload;
-      state.actors = state.actors.map((actor: any) => {
+      state.actors = state.actors.map((actor: Actor) => {
         if (actor.id === payload.actorId) {
           actor.nodes = payload.nodes;
           actor.edges = payload.edges;
@@ -96,7 +53,7 @@ export const counterSlice = createSlice({
     },
     appendNodeToStore: (state, action: PayloadAction<any>) => {
       const payload = action.payload;
-      state.actors = state.actors.map((actor) => {
+      state.actors = state.actors.map((actor: Actor) => {
         if (actor.id === payload.actorId) {
           actor.nodes = [
             ...payload.nodes,
@@ -111,27 +68,46 @@ export const counterSlice = createSlice({
         return actor;
       });
     },
-    removeNodeFromStore: (state, action: PayloadAction<any>) => {
+    removeNodeFromStore: (
+      state,
+      action: PayloadAction<{
+        actorId: string;
+        nodeId: string;
+      }>
+    ) => {
       const payload = action.payload;
-      state.actors = state.actors.map((actor) => {
-        if (actor.id === payload.actorId) {
-          actor.nodes = actor.nodes.filter(node => node.id !== payload.nodeId)
+      state.actors = state.actors.map((actor: Actor) => {
+        if (actor.id === payload.actorId && actor.nodes) {
+          actor.nodes = actor.nodes.filter(
+            (node) => node.id !== payload.nodeId
+          );
         }
         return actor;
       });
     },
-    changeNodeData: (state, action: PayloadAction<any>) => {
+    changeNodeData: (
+      state,
+      action: PayloadAction<{
+        areaId: string;
+        nodeId: string;
+        value: string;
+        inputId: string;
+        type: NodeInputType;
+      }>
+    ) => {
       const payload = action.payload;
-      state.actors = state.actors.map((actor) => {
+      state.actors = state.actors.map((actor: Actor) => {
         if (actor.id === payload.areaId) {
-          actor.nodes.map((node) => {
+          actor.nodes?.map((node) => {
             if (node.id === payload.nodeId) {
-              node.data[payload.type].map((input) => {
-                if (input.id === payload.inputId) {
-                  input.value = payload.value;
+              node.data[payload.type].map(
+                (input: NodeControlInput | NodeControlOutput) => {
+                  if (input.id === payload.inputId) {
+                    input.value = payload.value;
+                  }
+                  return input;
                 }
-                return input;
-              });
+              );
             }
             return node;
           });
@@ -139,11 +115,19 @@ export const counterSlice = createSlice({
         return actor;
       });
     },
-    appendNodeInput: (state, action: PayloadAction<any>) => {
+    appendNodeInput: (
+      state,
+      action: PayloadAction<{
+        areaId: string;
+        nodeId: string;
+        type: NodeInputType;
+        input: NodeControlInput | NodeControlOutput;
+      }>
+    ) => {
       const payload = action.payload;
-      state.actors = state.actors.map((actor) => {
+      state.actors = state.actors.map((actor: Actor) => {
         if (actor.id === payload.areaId) {
-          actor.nodes.map((node) => {
+          actor.nodes?.map((node) => {
             if (node.id === payload.nodeId) {
               node.data[payload.type] = [
                 ...node.data[payload.type],
@@ -156,7 +140,13 @@ export const counterSlice = createSlice({
         return actor;
       });
     },
-    changeSelectedNode: (state, action: PayloadAction<any>) => {
+    changeSelectedNode: (
+      state,
+      action: PayloadAction<{
+        areaId: string;
+        nodeId: string;
+      }>
+    ) => {
       state.currentSelectedNode = {
         areaId: action.payload.areaId,
         nodeId: action.payload.nodeId,
