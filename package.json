@@ -15,7 +15,10 @@
     "react-redux": "^8.0.5",
     "react-router5": "^8.0.1",
     "react-uuid": "^2.0.0",
-    "reactflow": "^11.4.2"
+    "reactflow": "^11.4.2",
+    "router5": "^8.0.1",
+    "router5-plugin-browser": "^8.0.1",
+    "router5-plugin-logger": "^8.0.1"
   },
   "devDependencies": {
     "@types/react": "^18.0.26",
