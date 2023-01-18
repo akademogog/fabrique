@@ -1,1 +1,1 @@
-export * from './NodesConfig'
+export * from './NodesEditor'

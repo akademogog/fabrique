@@ -1,13 +1,13 @@
 import React from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import uuid from "react-uuid";
-import style from "./NodesConfig.module.scss";
+import style from "./NodesEditor.module.scss";
 import { appendNodeInput, changeNodeData } from "@/store/slicers/flowSlicer";
 import { NodeInputType, Node, SelectedNode } from "@/types/node.types";
 
-interface NodesConfigProps extends SelectedNode {}
+interface NodesEditorProps extends SelectedNode {}
 
-export const NodesConfig: React.FC<NodesConfigProps> = ({ areaId, nodeId }) => {
+export const NodesEditor: React.FC<NodesEditorProps> = ({ areaId, nodeId }) => {
   const dispatch = useAppDispatch();
   const actor = useAppSelector((state) =>
     state.flow.actors.find((actor) => actor.id === areaId)
