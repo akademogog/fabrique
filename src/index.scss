@@ -1,5 +1,11 @@
 @import './assets/css/normalize.scss';
 
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 .react-flow__edge-path {
   stroke: steelblue;
   stroke-width: 6

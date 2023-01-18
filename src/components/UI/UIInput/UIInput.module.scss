@@ -1,0 +1,19 @@
+.input{
+    padding: 3px;
+    display: flex;
+    border: 1px solid rgb(41, 41, 41);
+
+    &Label {
+        background-color: rgb(214, 214, 214);
+        padding: 4px;
+        border-radius: 4px;
+        text-align: center;
+        margin-right: 5px;
+    }
+
+    &Field{
+        outline: none;
+        border: none;
+        background: none;
+    }
+}
