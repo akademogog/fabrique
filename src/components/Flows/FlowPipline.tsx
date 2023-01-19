@@ -263,7 +263,7 @@ const FlowPipline: FC<FlowPiplineProps> = ({
             <Link
               className="menuButton"
               onClick={closeAllMenus}
-              routeName="projects.actor"
+              routeName="actor"
               routeParams={{
                 piplineID: piplineID,
                 actorID: currentContextNode,

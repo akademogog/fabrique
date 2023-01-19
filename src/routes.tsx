@@ -1,5 +1,5 @@
 export default [
-  { name: 'projects', path: '/projects/:piplineID', children: [
-    { name: 'actor', path: '/actor/:actorID'},
-  ]}
-]
+  { name: "projects", path: "/projects/:piplineID" },
+  { name: "home", path: "/" },
+  { name: "actor", path: "/projects/:piplineID/actor/:actorID" },
+];

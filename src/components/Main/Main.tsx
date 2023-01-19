@@ -1,10 +1,12 @@
 
-import { useRouteNode } from "react-router5";
+import { Link, useRouteNode } from "react-router5";
 import PiplinePage from "@/pages/PiplinePage";
 import ActorPage from "@/pages/ActorPage";
 
 const Main = () => {
   const { route } = useRouteNode('');
+
+  
 
   if (route.name === "projects") {
     return (
@@ -12,10 +14,18 @@ const Main = () => {
     );
   }
 
-  if (route.name === "projects.actor") {
+  if (route.name === "actor") {
     return (
       <ActorPage piplineID={String(route.params.piplineID)} actorID={String(route.params.actorID)}/>
     );
+  }
+  if(route.name === 'home'){
+    return  (
+      <Link routeName="projects"
+      routeParams={{
+        piplineID: 1,
+      }}>Projects</Link>
+    )
   }
 
   // if (route.name === "projects.actor") {
