@@ -1,7 +1,12 @@
+import { NodeData } from "@/types/node.types";
 import { Handle, Position } from "reactflow";
-import style from './CustomNode.module.scss'
+import style from './CustomNode.module.scss';
 
-const ConstantsNode = ({ data }) => {  
+interface customNodeProps{
+  data: NodeData
+};
+
+const ConstantsNode: React.FC<customNodeProps> = ({ data }) => {  
   return (
     <>
       <div className={`${style.customNode}`}>
