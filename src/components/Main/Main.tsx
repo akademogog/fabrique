@@ -5,28 +5,36 @@ import { NodesEditor } from "../NodesEditor";
 import { useRouteNode } from 'react-router5'
 
 const Main = () => {
-  const actors = useAppSelector((state: RootState) => state.flow.actors);
+  const { nodes, edges, actors } = useAppSelector((state: RootState) => state.flow);
   const {areaId, nodeId} = useAppSelector((state: RootState) => state.flow.currentSelectedNode);
-
   const { route } = useRouteNode('');
-  let topRouteName;
-  if (route) {
-    topRouteName = route.name.split('.')[0];
-  }  
 
-  if (topRouteName === 'project') {
+  if (route && route.name === 'projects') {
     return (
-      <div className="App">
-        {actors.map((actor: any) => (
-          <div className="flowAreaContainer" key={actor.id}>
-            <FlowArea
-              actorId={actor.id}
-              storeNodes={actor.nodes}
-              storeEdges={actor.edges}
-            />
-            <NodesEditor areaId={areaId} nodeId={nodeId} />
-          </div>
-        ))}
+      <div className="flowAreaContainer">
+        <FlowArea
+          area={"projects"}
+          projectId={String(route.params.projectId)}
+          storeNodes={nodes}
+          storeEdges={edges}
+        />
+        <NodesEditor areaId={areaId} nodeId={nodeId} />
+      </div>
+    );
+  }
+
+  if (route && route.name === 'projects.actor') {
+    const currentActor = actors.find(actor => actor.id == route.params.actorId);
+    
+    return (
+      <div className="flowAreaContainer">
+        <FlowArea
+          area={"actor"}
+          actorId={String(route.params.actorId)}
+          storeNodes={currentActor && currentActor.nodes}
+          storeEdges={currentActor && currentActor.edges}
+        />
+        <NodesEditor areaId={areaId} nodeId={nodeId} />
       </div>
     );
   }

@@ -13,7 +13,6 @@ import ReactFlow, {
   applyEdgeChanges,
   addEdge,
 } from "reactflow";
-// 👇 you need to import the reactflow styles
 import "reactflow/dist/style.css";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
@@ -23,11 +22,14 @@ import {
   synchronizeStore,
 } from "@/store/slicers/flowSlicer";
 import CustomNode from "../CustomNode/CustomNode";
+import { Link } from "react-router5";
 
 type FlowProps = {
-  actorId: string | number;
-  storeNodes: [];
-  storeEdges: [];
+  projectId?: string;
+  actorId?: string;
+  area: string;
+  storeNodes: Node[] | undefined | null;
+  storeEdges: Edge[] | undefined | null;
 };
 
 const defaultCustomNode = [
@@ -63,28 +65,39 @@ const defaultCustomNode = [
   },
 ];
 
-const forbiddenСonnections = {
-  float: ["string", "array"],
-  string: ["float", "array"],
-};
+// const forbiddenСonnections = {
+//   float: ["string", "array"],
+//   string: ["float", "array"],
+// };
 
-const FlowArea: FC<FlowProps> = ({ actorId, storeNodes, storeEdges }) => {
+const FlowArea: FC<FlowProps> = ({
+  projectId,
+  actorId,
+  storeNodes,
+  storeEdges,
+  area,
+}) => {
   const dispatch = useAppDispatch();
   const currentSelectedNode = useAppSelector(
     (state) => state.flow.currentSelectedNode
   );
 
   useEffect(() => {
-    setNodes(storeNodes);
-    setEdges(storeEdges);
+    if (storeNodes) {
+      setNodes(storeNodes);
+    }
+    if (storeEdges) {
+      setEdges(storeEdges);
+    }
   }, [storeNodes, storeEdges]);
 
   const [nodes, setNodes] = useState<Node[]>(storeNodes);
   const [edges, setEdges] = useState<Edge[]>(storeEdges);
   const nodeTypes = useMemo(() => ({ customNode: CustomNode }), []);
 
-  const [isShowPaneMenu, setIsShowPaneMenu] = useState(false);
-  const [isShowNodeMenu, setIsShowNodeMenu] = useState(false);
+  const [isShowPaneMenu, setIsShowPaneMenu] = useState<boolean | undefined>();
+  const [isShowNodeMenu, setIsShowNodeMenu] = useState<Node | undefined>();
+  const [currentContextNode, setcurrentContextNode] = useState();
 
   const [viewportPosition, setViewportPosition] = useState({
     x: 0,
@@ -97,18 +110,18 @@ const FlowArea: FC<FlowProps> = ({ actorId, storeNodes, storeEdges }) => {
   });
   const getMouseViewportPosition = (
     e: React.MouseEvent,
-    menuType: string,
-    node: Node
+    menuType?: string,
+    node?: Node,
   ) => {
     e.preventDefault();
     let x = e.pageX,
       y = e.pageY;
     if (menuType === "pane") {
-      setIsShowNodeMenu(false);
+      setIsShowNodeMenu(undefined);
       setIsShowPaneMenu(true);
     }
     if (menuType === "node") {
-      setIsShowPaneMenu(false);
+      setIsShowPaneMenu(undefined);
       setIsShowNodeMenu(node);
     }
     setMouseViewportPosition({ x, y });
@@ -118,7 +131,6 @@ const FlowArea: FC<FlowProps> = ({ actorId, storeNodes, storeEdges }) => {
     }
     return { x, y };
   };
-
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
       setNodes((nds) => applyNodeChanges(changes, nds));
@@ -132,26 +144,25 @@ const FlowArea: FC<FlowProps> = ({ actorId, storeNodes, storeEdges }) => {
   );
   const onConnect = useCallback(
     (connection: Connection) => {
-      const targetNode = nodes.find((el) => el.id === connection.target);
-      const targetInput = targetNode.data.inputs.find(
-        (el) => el.id === connection.targetHandle
-      );
-      const sourseNode = nodes.find((el) => el.id === connection.source);
-      const sourseOutput = sourseNode.data.outputs.find(
-        (el) => el.id === connection.sourceHandle
-      );
-      if (
-        !forbiddenСonnections[targetInput.type].find(
-          (e) => e === sourseOutput.type
-        )
-      ) {
+      // const targetNode = nodes.find((el) => el.id === connection.target);
+      // const targetInput = targetNode.data.inputs.find(
+      //   (el) => el.id === connection.targetHandle
+      // );
+      // const sourseNode = nodes.find((el) => el.id === connection.source);
+      // const sourseOutput = sourseNode.data.outputs.find(
+      //   (el) => el.id === connection.sourceHandle
+      // );
+      // if (
+      //   !forbiddenСonnections[targetInput.type].find(
+      //     (e) => e === sourseOutput.type
+      //   )
+      // ) {
         setEdges((eds) => addEdge(connection, eds));
-      }
+      // }
     },
     [setEdges]
   );
-  const appendNode = (e: React.MouseEvent, type: string, data: object) => {
-    console.log(data)
+  const appendNode = (e: React.MouseEvent, type: string | undefined, data: object) => {
     const { x, y } = getMouseViewportPosition(e);
     dispatch(
       appendNodeToStore({
@@ -165,22 +176,22 @@ const FlowArea: FC<FlowProps> = ({ actorId, storeNodes, storeEdges }) => {
     );
     closeAllMenus();
   };
-  const onNodeClick = (_: React.MouseEvent, node: object) => {
-    dispatch(changeSelectedNode({ areaId: actorId, nodeId: node.id }));
+  const onNodeClick = (_: React.MouseEvent, node: Node) => {
+    dispatch(changeSelectedNode({ areaId: actorId ? actorId : '', nodeId: node.id }));
     closeAllMenus();
   };
   const removeNode = () => {
     if (
       currentSelectedNode.areaId === actorId &&
-      currentSelectedNode.nodeId === isShowNodeMenu.id
+      currentSelectedNode.nodeId === (isShowNodeMenu && isShowNodeMenu.id)
     ) {
       dispatch(changeSelectedNode({ areaId: "", nodeId: "" }));
     }
-    dispatch(removeNodeFromStore({ actorId, nodeId: isShowNodeMenu.id }));
-    setIsShowNodeMenu(false);
+    dispatch(removeNodeFromStore({ actorId: actorId ? actorId : '', nodeId: isShowNodeMenu ? isShowNodeMenu.id : ''}));
+    setIsShowNodeMenu(undefined);
   };
   const closeAllMenus = () => {
-    setIsShowNodeMenu(false);
+    setIsShowNodeMenu(undefined);
     setIsShowPaneMenu(false);
   };
 
@@ -200,16 +211,17 @@ const FlowArea: FC<FlowProps> = ({ actorId, storeNodes, storeEdges }) => {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onNodeDragStop={() =>
-          dispatch(synchronizeStore({ actorId, nodes, edges }))
+          dispatch(synchronizeStore({ actorId: actorId ? actorId : '', nodes, edges }))
         }
         onEdgeClick={(_, edge) => {
           setEdges(edges.filter((e) => e.id !== edge.id));
           closeAllMenus();
         }}
         onPaneContextMenu={(e) => getMouseViewportPosition(e, "pane")}
-        onNodeContextMenu={(e, node) =>
-          getMouseViewportPosition(e, "node", node)
-        }
+        onNodeContextMenu={(e, node: Node) => {
+          setcurrentContextNode(node.id);
+          getMouseViewportPosition(e, "node", node);
+        }}
         onMoveEnd={(_, viewport) => setViewportPosition(viewport)}
         onNodeClick={onNodeClick}
         onPaneClick={closeAllMenus}
@@ -224,24 +236,21 @@ const FlowArea: FC<FlowProps> = ({ actorId, storeNodes, storeEdges }) => {
               top: mouseViewportPosition.y,
             }}
           >
-            {
-              defaultCustomNode.map(nodeDatas => (
-                <button
-                  onClick={(e) =>
-                    appendNode(e, "customNode", {
-                      label: nodeDatas.label,
-                      inputs: nodeDatas.inputs,
-                      outputs: nodeDatas.outputs,
-                    })
-                  }
-                >
-                  {nodeDatas.name}
-                </button>
-              ))
-            }
+            {defaultCustomNode.map((nodeDatas) => (
+              <button
+                onClick={(e) =>
+                  appendNode(e, "customNode", {
+                    label: nodeDatas.label,
+                    inputs: nodeDatas.inputs,
+                    outputs: nodeDatas.outputs,
+                  })
+                }
+              >
+                {nodeDatas.name}
+              </button>
+            ))}
           </div>
         )}
-
         {isShowNodeMenu && (
           <div
             className="menu"
@@ -258,6 +267,18 @@ const FlowArea: FC<FlowProps> = ({ actorId, storeNodes, storeEdges }) => {
             >
               Clone
             </button>
+            {area === "projects" && (
+              <Link
+                onClick={closeAllMenus}
+                routeName="projects.actor"
+                routeParams={{
+                  projectId: Number(projectId),
+                  actorId: Number(currentContextNode),
+                }}
+              >
+                Edit
+              </Link>
+            )}
           </div>
         )}
         <Background />
