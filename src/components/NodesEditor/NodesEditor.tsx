@@ -5,7 +5,7 @@ import style from "./NodesEditor.module.scss";
 import { appendNodeInput, changeNodeData } from "@/store/slicers/flowSlicer";
 import { NodeInputType, Node, SelectedNode } from "@/types/node.types";
 import { NodesEditorSection } from "./components/NodesEditorSection";
-import { UIInput, UISelect } from "../UI";
+import { UIIButton, UIInput, UISelect } from "../UI";
 
 interface NodesEditorProps extends SelectedNode {}
 
@@ -16,7 +16,7 @@ export const NodesEditor: React.FC<NodesEditorProps> = ({ areaId, nodeId }) => {
   );
   const selectedNode: Node | undefined = useMemo(
     () => actor && actor.nodes?.find((node) => node.id === nodeId),
-    [nodeId]
+    [actor]
   );
 
   const onInputChange = (e: any, id: string, type: NodeInputType) => {
@@ -62,7 +62,9 @@ export const NodesEditor: React.FC<NodesEditorProps> = ({ areaId, nodeId }) => {
           </NodesEditorSection>
 
           <NodesEditorSection title="Inputs">
-            <button onClick={(e) => appendInput("inputs")}>append</button>
+            <UIIButton variant="green" onClick={(e) => appendInput("inputs")}>
+              append
+            </UIIButton>
             {selectedNode &&
               selectedNode.data.inputs.map((input) => (
                 <div key={input.id} className={style.nodesEditorInputBlock}>
@@ -83,7 +85,9 @@ export const NodesEditor: React.FC<NodesEditorProps> = ({ areaId, nodeId }) => {
               ))}
           </NodesEditorSection>
           <NodesEditorSection title="Outputs">
-            <button onClick={() => appendInput("outputs")}>append</button>
+            <UIIButton variant="green" onClick={(e) => appendInput("outputs")}>
+              append
+            </UIIButton>
             {selectedNode &&
               selectedNode.data.outputs.map((input) => (
                 <div key={input.id} className={style.nodesEditorInputBlock}>
