@@ -62,7 +62,7 @@ export const NodesEditor: React.FC<NodesEditorProps> = ({ areaId, nodeId }) => {
           </NodesEditorSection>
 
           <NodesEditorSection title="Inputs">
-            <UIIButton variant="green" onClick={(e) => appendInput("inputs")}>
+            <UIIButton variant="green" onClick={() => appendInput("inputs")}>
               append
             </UIIButton>
             {selectedNode &&
@@ -85,7 +85,7 @@ export const NodesEditor: React.FC<NodesEditorProps> = ({ areaId, nodeId }) => {
               ))}
           </NodesEditorSection>
           <NodesEditorSection title="Outputs">
-            <UIIButton variant="green" onClick={(e) => appendInput("outputs")}>
+            <UIIButton variant="green" onClick={() => appendInput("outputs")}>
               append
             </UIIButton>
             {selectedNode &&
