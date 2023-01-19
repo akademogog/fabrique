@@ -25,3 +25,8 @@ export interface Node {
   position: Position;
   name: string;
 }
+
+export interface SelectedNode {
+  areaId: string;
+  nodeId: string;
+}

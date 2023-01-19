@@ -1,12 +1,13 @@
-import { useAppSelector } from "../../store/hooks";
-import { RootState } from "../../store/store";
+import { useAppSelector } from "@/store/hooks";
+import { RootState } from "@/store/store";
 import FlowArea from "../Flow/FlowArea";
-import { NodesConfig } from "../NodesConfig";
+import { NodesEditor } from "../NodesEditor";
 import { useRouteNode } from 'react-router5'
 
 const Main = () => {
-  const { nodes, edges, actors, currentSelectedNode } = useAppSelector((state: RootState) => state.flow);
-  const { route } = useRouteNode('');  
+  const { nodes, edges, actors } = useAppSelector((state: RootState) => state.flow);
+  const {areaId, nodeId} = useAppSelector((state: RootState) => state.flow.currentSelectedNode);
+  const { route } = useRouteNode('');
 
   if (route && route.name === 'projects') {
     return (
@@ -17,7 +18,7 @@ const Main = () => {
           storeNodes={nodes}
           storeEdges={edges}
         />
-        <NodesConfig currentSelectedNode={currentSelectedNode} />
+        <NodesEditor areaId={areaId} nodeId={nodeId} />
       </div>
     );
   }
@@ -33,7 +34,7 @@ const Main = () => {
           storeNodes={currentActor && currentActor.nodes}
           storeEdges={currentActor && currentActor.edges}
         />
-        <NodesConfig currentSelectedNode={currentSelectedNode} />
+        <NodesEditor areaId={areaId} nodeId={nodeId} />
       </div>
     );
   }
