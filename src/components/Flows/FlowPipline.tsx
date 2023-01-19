@@ -9,28 +9,27 @@ import ReactFlow, {
   NodeChange,
   Connection,
   Edge,
-  EdgeChange,
-  applyEdgeChanges,
-  addEdge,
 } from "reactflow";
 import "reactflow/dist/style.css";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { useAppDispatch } from "@/store/hooks";
 import {
-  appendNodeToStore,
   changeSelectedNode,
-  removeNodeFromStore,
-  synchronizeStore,
+  updatePiplineNode,
+  appendPiplineNode,
+  removePiplineNode,
+  appendPiplineEdge,
+  removePiplineEdge,
 } from "@/store/slicers/flowSlicer";
 import CustomNode from "../CustomNode/CustomNode";
 import { Link } from "react-router5";
 
-type FlowProps = {
-  projectId?: string;
-  actorId?: string;
-  area: string;
+interface FlowPiplineProps {
+  piplineID: string;
   storeNodes: Node[] | undefined | null;
   storeEdges: Edge[] | undefined | null;
-};
+  areaId: string | undefined;
+  nodeId: string | undefined;
+}
 
 const defaultCustomNode = [
   {
@@ -65,40 +64,18 @@ const defaultCustomNode = [
   },
 ];
 
-// const forbiddenСonnections = {
-//   float: ["string", "array"],
-//   string: ["float", "array"],
-// };
-
-const FlowArea: FC<FlowProps> = ({
-  projectId,
-  actorId,
+const FlowPipline: FC<FlowPiplineProps> = ({
+  piplineID,
   storeNodes,
   storeEdges,
-  area,
+  areaId,
+  nodeId,
 }) => {
   const dispatch = useAppDispatch();
-  const currentSelectedNode = useAppSelector(
-    (state) => state.flow.currentSelectedNode
-  );
-
-  useEffect(() => {
-    if (storeNodes) {
-      setNodes(storeNodes);
-    }
-    if (storeEdges) {
-      setEdges(storeEdges);
-    }
-  }, [storeNodes, storeEdges]);
-
   const [nodes, setNodes] = useState<Node[]>(storeNodes);
-  const [edges, setEdges] = useState<Edge[]>(storeEdges);
-  const nodeTypes = useMemo(() => ({ customNode: CustomNode }), []);
-
   const [isShowPaneMenu, setIsShowPaneMenu] = useState<boolean | undefined>();
   const [isShowNodeMenu, setIsShowNodeMenu] = useState<Node | undefined>();
   const [currentContextNode, setcurrentContextNode] = useState();
-
   const [viewportPosition, setViewportPosition] = useState({
     x: 0,
     y: 0,
@@ -108,10 +85,38 @@ const FlowArea: FC<FlowProps> = ({
     x: 0,
     y: 0,
   });
+  const nodeTypes = useMemo(() => ({ customNode: CustomNode }), []);
+  useEffect(() => {
+    if (storeNodes) {
+      setNodes(storeNodes);
+    }
+  }, [storeNodes]);
+
+  const onNodesChange = useCallback(
+    (changes: NodeChange[]) => {
+      setNodes((nds) => applyNodeChanges(changes, nds));
+    },
+    [setNodes]
+  );
+  const onConnect = (connection: Connection) => {
+    const edge = {
+      id: `e${connection.source}_${connection.sourceHandle}-${connection.target}_${connection.targetHandle}`,
+      ...connection,
+    };
+
+    if (!storeEdges?.find((storeEdge) => storeEdge.id === edge.id)) {
+      dispatch(
+        appendPiplineEdge({
+          piplineID,
+          edge: edge,
+        })
+      );
+    }
+  };
   const getMouseViewportPosition = (
     e: React.MouseEvent,
     menuType?: string,
-    node?: Node,
+    node?: Node
   ) => {
     e.preventDefault();
     let x = e.pageX,
@@ -131,43 +136,16 @@ const FlowArea: FC<FlowProps> = ({
     }
     return { x, y };
   };
-  const onNodesChange = useCallback(
-    (changes: NodeChange[]) => {
-      setNodes((nds) => applyNodeChanges(changes, nds));
-    },
-    [setNodes]
-  );
-  const onEdgesChange = useCallback(
-    (changes: EdgeChange[]) =>
-      setEdges((eds) => applyEdgeChanges(changes, eds)),
-    [setEdges]
-  );
-  const onConnect = useCallback(
-    (connection: Connection) => {
-      // const targetNode = nodes.find((el) => el.id === connection.target);
-      // const targetInput = targetNode.data.inputs.find(
-      //   (el) => el.id === connection.targetHandle
-      // );
-      // const sourseNode = nodes.find((el) => el.id === connection.source);
-      // const sourseOutput = sourseNode.data.outputs.find(
-      //   (el) => el.id === connection.sourceHandle
-      // );
-      // if (
-      //   !forbiddenСonnections[targetInput.type].find(
-      //     (e) => e === sourseOutput.type
-      //   )
-      // ) {
-        setEdges((eds) => addEdge(connection, eds));
-      // }
-    },
-    [setEdges]
-  );
-  const appendNode = (e: React.MouseEvent, type: string | undefined, data: object) => {
+  const appendNode = (
+    e: React.MouseEvent,
+    type: string | undefined,
+    data: object
+  ) => {
     const { x, y } = getMouseViewportPosition(e);
     dispatch(
-      appendNodeToStore({
+      appendPiplineNode({
         nodes,
-        actorId,
+        piplineID,
         id: uuid(),
         position: { x, y },
         type,
@@ -177,17 +155,24 @@ const FlowArea: FC<FlowProps> = ({
     closeAllMenus();
   };
   const onNodeClick = (_: React.MouseEvent, node: Node) => {
-    dispatch(changeSelectedNode({ areaId: actorId ? actorId : '', nodeId: node.id }));
+    dispatch(
+      changeSelectedNode({ area: 'pipline', areaId: piplineID, nodeId: node.id })
+    );
     closeAllMenus();
   };
   const removeNode = () => {
     if (
-      currentSelectedNode.areaId === actorId &&
-      currentSelectedNode.nodeId === (isShowNodeMenu && isShowNodeMenu.id)
+      areaId === piplineID &&
+      nodeId === (isShowNodeMenu && isShowNodeMenu.id)
     ) {
-      dispatch(changeSelectedNode({ areaId: "", nodeId: "" }));
+      dispatch(changeSelectedNode({ area: 'pipline', areaId: "", nodeId: "" }));
     }
-    dispatch(removeNodeFromStore({ actorId: actorId ? actorId : '', nodeId: isShowNodeMenu ? isShowNodeMenu.id : ''}));
+    dispatch(
+      removePiplineNode({
+        piplineID,
+        nodeId: isShowNodeMenu ? isShowNodeMenu.id : "",
+      })
+    );
     setIsShowNodeMenu(undefined);
   };
   const closeAllMenus = () => {
@@ -199,7 +184,7 @@ const FlowArea: FC<FlowProps> = ({
     <>
       <ReactFlow
         nodes={nodes}
-        edges={edges}
+        edges={storeEdges}
         nodeTypes={nodeTypes}
         connectionLineStyle={{ strokeWidth: 6, stroke: "steelblue" }}
         nodeOrigin={[0.5, 0]}
@@ -208,14 +193,17 @@ const FlowArea: FC<FlowProps> = ({
           setViewportPosition(reactFlowInstance.getViewport())
         }
         onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onNodeDragStop={() =>
-          dispatch(synchronizeStore({ actorId: actorId ? actorId : '', nodes, edges }))
+          dispatch(
+            updatePiplineNode({
+              piplineID,
+              nodes,
+            })
+          )
         }
         onEdgeClick={(_, edge) => {
-          setEdges(edges.filter((e) => e.id !== edge.id));
-          closeAllMenus();
+          dispatch(removePiplineEdge({ piplineID, edgeId: edge.id }));
         }}
         onPaneContextMenu={(e) => getMouseViewportPosition(e, "pane")}
         onNodeContextMenu={(e, node: Node) => {
@@ -238,6 +226,8 @@ const FlowArea: FC<FlowProps> = ({
           >
             {defaultCustomNode.map((nodeDatas) => (
               <button
+                key={uuid()}
+                className="menuButton"
                 onClick={(e) =>
                   appendNode(e, "customNode", {
                     label: nodeDatas.label,
@@ -259,26 +249,28 @@ const FlowArea: FC<FlowProps> = ({
               top: mouseViewportPosition.y,
             }}
           >
-            <button onClick={(e) => removeNode()}>Delete</button>
+            <button className="menuButton" onClick={(e) => removeNode()}>
+              Delete
+            </button>
             <button
+              className="menuButton"
               onClick={(e) =>
                 appendNode(e, isShowNodeMenu.type, isShowNodeMenu.data)
               }
             >
               Clone
             </button>
-            {area === "projects" && (
-              <Link
-                onClick={closeAllMenus}
-                routeName="projects.actor"
-                routeParams={{
-                  projectId: Number(projectId),
-                  actorId: Number(currentContextNode),
-                }}
-              >
-                Edit
-              </Link>
-            )}
+            <Link
+              className="menuButton"
+              onClick={closeAllMenus}
+              routeName="projects.actor"
+              routeParams={{
+                piplineID: piplineID,
+                actorID: currentContextNode,
+              }}
+            >
+              Edit
+            </Link>
           </div>
         )}
         <Background />
@@ -287,4 +279,4 @@ const FlowArea: FC<FlowProps> = ({
   );
 };
 
-export default FlowArea;
+export default FlowPipline;

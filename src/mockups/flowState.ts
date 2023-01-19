@@ -55,7 +55,7 @@ export const nodes: Node[] = [
     name: "Parser",
   }
 ];
-export const edges: Edge[] = [{ id: "e1-2", source: "1", target: "2" }];
+export const edges: Edge[] = [{ id: "e1_1-2_1", source: "1", target: "2", sourceHandle: '1', targetHandle: '1' }];
 export const actors: Actor[] = [
   {
     id: "1",
@@ -95,7 +95,7 @@ export const actors: Actor[] = [
         name: "Parser",
       },
     ],
-    edges: [{ id: "e10-11", source: "10", target: "11" }],
+    edges: [{ id: "e10_2-11_1", source: "10", target: "11", sourceHandle: '1', targetHandle: '1' }],
   },
   {
     id: "2",

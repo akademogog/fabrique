@@ -1,4 +1,4 @@
-import { Edge } from "./global.types";
+import { Edge } from "reactflow";
 import { Node } from "./node.types";
 
 export interface Actor {

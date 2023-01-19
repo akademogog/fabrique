@@ -4,6 +4,8 @@ export interface Position {
 }
 export interface Edge {
   id: string;
-  source: string;
-  target: string;
+  source: string | null;
+  target: string | null;
+  sourceHandle?: string | null;
+  targetHandle?: string | null;
 }
