@@ -5,6 +5,8 @@ import ActorPage from "@/pages/ActorPage";
 const Main = () => {
   const { route } = useRouteNode("");  
 
+  
+
   if (route.name === "projects") {
     return <PiplinePage piplineID={String(route.params.piplineID)} />;
   }
@@ -29,6 +31,14 @@ const Main = () => {
         >projects 1</Link>
       </div>
     );
+  }
+  if(route.name === 'home'){
+    return  (
+      <Link routeName="projects"
+      routeParams={{
+        piplineID: 1,
+      }}>Projects</Link>
+    )
   }
 
   // if (route.name === "projects.actor") {
