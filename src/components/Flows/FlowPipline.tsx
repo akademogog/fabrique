@@ -19,6 +19,7 @@ import {
   removePiplineNode,
   appendPiplineEdge,
   removePiplineEdge,
+  updatePiplineNodePosition,
 } from "@/store/slicers/flowSlicer";
 import CustomNode from "../CustomNode/CustomNode";
 import { Link } from "react-router5";
@@ -93,7 +94,7 @@ const FlowPipline: FC<FlowPiplineProps> = ({
   }, [storeNodes]);
 
   const onNodesChange = useCallback(
-    (changes: NodeChange[]) => {
+    (changes: NodeChange[]) => {      
       setNodes((nds) => applyNodeChanges(changes, nds));
     },
     [setNodes]
@@ -193,6 +194,7 @@ const FlowPipline: FC<FlowPiplineProps> = ({
           setViewportPosition(reactFlowInstance.getViewport())
         }
         onNodesChange={onNodesChange}
+        // onNodeDrag={onDrag}
         onConnect={onConnect}
         onNodeDragStop={() =>
           dispatch(
@@ -263,7 +265,7 @@ const FlowPipline: FC<FlowPiplineProps> = ({
             <Link
               className="menuButton"
               onClick={closeAllMenus}
-              routeName="projects.actor"
+              routeName="actor"
               routeParams={{
                 piplineID: piplineID,
                 actorID: currentContextNode,

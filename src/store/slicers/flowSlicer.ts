@@ -5,31 +5,48 @@ import {
   NodeInputType,
   NodeControlInput,
   NodeControlOutput,
+  Node,
 } from "@/types/node.types";
-import { Edge, Node } from "reactflow";
+import { Edge, Node as FlowNode } from "reactflow";
 import { actors, edges, nodes } from "@/mockups/flowState";
+import { arrayToObject } from "@/helpers/mapping";
 
-interface InitialState {
+interface IPipline {
   id: string;
-  nodes: Node[];
+  nodes: Node;
   edges: Edge[];
-  actors: Actor[];
+  actors: Actor;
+}
+interface InitialState {
+  piplines: { [id: string]: IPipline };
   currentSelectedNode: { area: string; areaId: string; nodeId: string };
+  piplineID: string | number;
+  actorID: string | number;
 }
 
-const initialState: InitialState[] = [
-  {
-    id: "1",
-    nodes: nodes,
-    edges: edges,
-    actors: actors,
-    currentSelectedNode: {
-      area: "",
-      areaId: "",
-      nodeId: "",
+const initialState: InitialState = {
+  piplines: {
+    '1': {
+      id: "1",
+      nodes: nodes,
+      edges: edges,
+      actors: actors,
+    },
+    '2': {
+      id: "2",
+      nodes: nodes,
+      edges: edges,
+      actors: actors,
     },
   },
-];
+  currentSelectedNode: {
+    area: "",
+    areaId: "",
+    nodeId: "",
+  },
+  piplineID: '1',
+  actorID: '2',
+};
 
 export const counterSlice = createSlice({
   name: "counter",
@@ -43,12 +60,25 @@ export const counterSlice = createSlice({
       }>
     ) => {
       const payload = action.payload;
-      state = state.map((pipline) => {
-        if (pipline.id === payload.piplineID) {
-          pipline.nodes = payload.nodes;
-        }
-        return pipline;
-      });
+
+      // state.piplines = state.map((pipline) => {
+      //   if (pipline.id === payload.piplineID) {
+      //     pipline.nodes = payload.nodes;
+      //   }
+      //   return pipline;
+      // });
+      
+      state.piplines[state.piplineID].nodes = arrayToObject(payload.nodes);
+    },
+    updatePiplineNodePosition: (
+      state,
+      action: PayloadAction<{
+        nodeID: string;
+        position: { x: string, y: string };
+      }>
+    ) => {
+      const payload = action.payload;      
+      state.piplines[state.piplineID].nodes[payload.nodeID].position = payload.position;
     },
     appendPiplineNode: (
       state,
@@ -139,9 +169,9 @@ export const counterSlice = createSlice({
       }>
     ) => {
       const payload = action.payload;
-      state = state.map(pipline => {
+      state = state.map((pipline) => {
         if (pipline.id === payload.piplineID) {
-          pipline.actors = pipline.actors.map(actor => {
+          pipline.actors = pipline.actors.map((actor) => {
             if (actor.id === payload.actorID) {
               actor.nodes = actor.nodes;
             }
@@ -166,7 +196,7 @@ export const counterSlice = createSlice({
       const payload = action.payload;
       state = state.map((pipline) => {
         if (pipline.id === payload.piplineID) {
-          pipline.actors = pipline.actors.map(actor => {
+          pipline.actors = pipline.actors.map((actor) => {
             if (actor.id === payload.actorID) {
               actor.nodes = [
                 ...payload.nodes,
@@ -176,11 +206,10 @@ export const counterSlice = createSlice({
                   type: payload.type,
                   data: payload.data,
                 },
-              ];;
+              ];
             }
             return actor;
           });
-          
         }
         return pipline;
       });
@@ -196,7 +225,7 @@ export const counterSlice = createSlice({
       const payload = action.payload;
       state = state.map((pipline) => {
         if (pipline.id === payload.piplineID) {
-          pipline.actors = pipline.actors.map(actor => {
+          pipline.actors = pipline.actors.map((actor) => {
             if (actor.id === payload.actorID) {
               actor.nodes = actor.nodes.filter(
                 (node) => node.id !== payload.nodeId
@@ -219,7 +248,7 @@ export const counterSlice = createSlice({
       const payload = action.payload;
       state = state.map((pipline) => {
         if (pipline.id === payload.piplineID) {
-          pipline.actors = pipline.actors.map(actor => {
+          pipline.actors = pipline.actors.map((actor) => {
             if (actor.id === payload.actorID) {
               if (!actor.edges) {
                 actor.edges = [];
@@ -243,7 +272,7 @@ export const counterSlice = createSlice({
       const payload = action.payload;
       state = state.map((pipline) => {
         if (pipline.id === payload.piplineID) {
-          pipline.actors = pipline.actors.map(actor => {
+          pipline.actors = pipline.actors.map((actor) => {
             if (actor.id === payload.actorID) {
               actor.edges = actor.edges?.filter(
                 (edge) => edge.id !== payload.edgeId
@@ -345,6 +374,7 @@ export const {
   appendNodeInput,
   createNewActorNodes,
   updatePiplineNode,
+  updatePiplineNodePosition,
   appendPiplineNode,
   removePiplineNode,
   appendPiplineEdge,

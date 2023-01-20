@@ -1,20 +1,33 @@
-
-import { useRouteNode } from "react-router5";
+import { Link, useRouteNode } from "react-router5";
 import PiplinePage from "@/pages/PiplinePage";
 import ActorPage from "@/pages/ActorPage";
 
 const Main = () => {
-  const { route } = useRouteNode('');
+  const { route } = useRouteNode("");  
 
   if (route.name === "projects") {
+    return <PiplinePage piplineID={String(route.params.piplineID)} />;
+  }
+
+  if (route.name === "actor") {
     return (
-      <PiplinePage piplineID={String(route.params.piplineID)}/>
+      <ActorPage
+        piplineID={String(route.params.piplineID)}
+        actorID={String(route.params.actorID)}
+      />
     );
   }
 
-  if (route.name === "projects.actor") {
+  if (route.name === "home") {
     return (
-      <ActorPage piplineID={String(route.params.piplineID)} actorID={String(route.params.actorID)}/>
+      <div>
+        <Link
+          routeName="projects"
+          routeParams={{
+            piplineID: '1',
+          }}
+        >projects 1</Link>
+      </div>
     );
   }
 
@@ -22,7 +35,7 @@ const Main = () => {
   //   const currentActor = actors.find(
   //     (actor) => actor.id == route.params.actorID
   //   );
-    
+
   //   if (!currentActor) {
   //     dispatch(createNewActorNodes({actorID: String(route.params.actorID)}));
   //   }

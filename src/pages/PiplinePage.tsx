@@ -1,5 +1,6 @@
 import FlowPipline from "@/components/Flows/FlowPipline";
 import { NodesEditor } from "@/components/NodesEditor";
+import { objectToArray } from "@/helpers/mapping";
 import { useAppSelector } from "@/store/hooks";
 import { RootState } from "@/store/store";
 import { FC } from "react";
@@ -9,8 +10,10 @@ interface PiplinePageProps {
 }
 
 const PiplinePage: FC<PiplinePageProps> = ({ piplineID }) => {
-  const { nodes, edges, currentSelectedNode } = useAppSelector(
-    (state: RootState) => state.flow.find((pipline) => pipline.id === piplineID)
+  const nodes = useAppSelector((state: RootState) => objectToArray(state.flow.piplines[piplineID].nodes));
+  const edges = useAppSelector((state: RootState) => state.flow.piplines[piplineID].edges);
+  const { currentSelectedNode } = useAppSelector(
+    (state: RootState) => state.flow
   );
 
   return (
@@ -33,3 +36,4 @@ const PiplinePage: FC<PiplinePageProps> = ({ piplineID }) => {
 };
 
 export default PiplinePage;
+

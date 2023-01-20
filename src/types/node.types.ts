@@ -19,11 +19,13 @@ export interface NodeData {
 }
 
 export interface Node {
-  id: string;
-  type: NodeType;
-  data: NodeData;
-  position: Position;
-  name: string;
+  [id: string]: {
+    id: string;
+    type: NodeType;
+    data: NodeData;
+    position: Position;
+    name: string;
+  }
 }
 
 export interface SelectedNode {
