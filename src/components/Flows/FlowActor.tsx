@@ -67,7 +67,6 @@ const defaultCustomNode = [
 
 const FlowPipline: FC<FlowPiplineProps> = ({
   piplineID,
-  actorID,
   storeNodes,
   storeEdges,
   areaId,
@@ -108,8 +107,6 @@ const FlowPipline: FC<FlowPiplineProps> = ({
     if (!storeEdges?.find((storeEdge) => storeEdge.id === edge.id)) {
       dispatch(
         appendActorEdge({
-          piplineID,
-          actorID,
           edge: edge,
         })
       );
@@ -140,16 +137,12 @@ const FlowPipline: FC<FlowPiplineProps> = ({
   };
   const appendNode = (
     e: React.MouseEvent,
-    type: string | undefined,
+    type: string,
     data: object
   ) => {
     const { x, y } = getMouseViewportPosition(e);
     dispatch(
       appendActorNode({
-        nodes,
-        piplineID,
-        actorID,
-        id: uuid(),
         position: { x, y },
         type,
         data,
@@ -170,8 +163,6 @@ const FlowPipline: FC<FlowPiplineProps> = ({
     }
     dispatch(
       removeActorNode({
-        piplineID,
-        actorID,
         nodeId: isShowNodeMenu ? isShowNodeMenu.id : "",
       })
     );
@@ -199,14 +190,14 @@ const FlowPipline: FC<FlowPiplineProps> = ({
         onNodeDragStop={() =>
           dispatch(
             updateActorNode({
-              piplineID,
-              actorID,
               nodes,
             })
           )
         }
         onEdgeClick={(_, edge) => {
-          dispatch(removeActorEdge({ piplineID, actorID, edgeId: edge.id }));
+          console.log(edge.id);
+          
+          dispatch(removeActorEdge({ edgeId: edge.id }));
         }}
         onPaneContextMenu={(e) => getMouseViewportPosition(e, "pane")}
         onNodeContextMenu={(e, node: Node) => {

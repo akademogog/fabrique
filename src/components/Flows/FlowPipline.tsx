@@ -139,15 +139,12 @@ const FlowPipline: FC<FlowPiplineProps> = ({
   };
   const appendNode = (
     e: React.MouseEvent,
-    type: string | undefined,
+    type: string,
     data: object
   ) => {
     const { x, y } = getMouseViewportPosition(e);
     dispatch(
       appendPiplineNode({
-        nodes,
-        piplineID,
-        id: uuid(),
         position: { x, y },
         type,
         data,

@@ -1,5 +1,5 @@
+import { Edges } from "@/types/global.types";
 import { Node } from "@/types/node.types";
-import { Edge } from "reactflow";
 import { Actor } from "../types/actor.types";
 
 export const nodes: Node = {
@@ -55,7 +55,15 @@ export const nodes: Node = {
     name: "Parser",
   }
 };
-export const edges: Edge[] = [{ id: "e1_1-2_1", source: "1", target: "2", sourceHandle: '1', targetHandle: '1' }];
+export const edges: Edges = { 
+  "e1_1-2_1": { 
+    id: "e1_1-2_1",
+    source: "1",
+    target: "2",
+    sourceHandle: '1',
+    targetHandle: '1'
+  }
+};
 export const actors: Actor = {
   "1": {
     id: "1",
@@ -95,7 +103,9 @@ export const actors: Actor = {
         name: "Parser",
       },
     },
-    edges: [{ id: "e10_2-11_1", source: "10", target: "11", sourceHandle: '1', targetHandle: '1' }],
+    edges: {
+      "e10_2-11_1": { id: "e10_2-11_1", source: "10", target: "11", sourceHandle: '1', targetHandle: '1' }
+    },
   },
   "2": {
     id: "2",

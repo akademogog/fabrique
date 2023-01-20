@@ -1,6 +1,6 @@
 import { Position } from "./global.types";
 
-export type NodeType = "customNode";
+export type NodeType = string;
 export type NodeInputType = 'inputs' | 'outputs';
 
 interface NodeControl {
@@ -24,7 +24,7 @@ export interface Node {
     type: NodeType;
     data: NodeData;
     position: Position;
-    name: string;
+    name?: string;
   }
 }
 

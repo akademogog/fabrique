@@ -10,11 +10,13 @@ import {
 import { Edge, Node as FlowNode } from "reactflow";
 import { actors, edges, nodes } from "@/mockups/flowState";
 import { arrayToObject } from "@/helpers/mapping";
+import uuid from "react-uuid";
+import { Edges } from "@/types/global.types";
 
 interface IPipline {
   id: string;
   nodes: Node;
-  edges: Edge[];
+  edges: Edges;
   actors: Actor;
 }
 interface InitialState {
@@ -45,7 +47,7 @@ const initialState: InitialState = {
     nodeId: "",
   },
   piplineID: '1',
-  actorID: '2',
+  actorID: '1',
 };
 
 export const counterSlice = createSlice({
@@ -55,244 +57,111 @@ export const counterSlice = createSlice({
     updatePiplineNode: (
       state,
       action: PayloadAction<{
-        piplineID: string;
         nodes: Node[];
       }>
     ) => {
       const payload = action.payload;
-
-      // state.piplines = state.map((pipline) => {
-      //   if (pipline.id === payload.piplineID) {
-      //     pipline.nodes = payload.nodes;
-      //   }
-      //   return pipline;
-      // });
-      
       state.piplines[state.piplineID].nodes = arrayToObject(payload.nodes);
-    },
-    updatePiplineNodePosition: (
-      state,
-      action: PayloadAction<{
-        nodeID: string;
-        position: { x: string, y: string };
-      }>
-    ) => {
-      const payload = action.payload;      
-      state.piplines[state.piplineID].nodes[payload.nodeID].position = payload.position;
     },
     appendPiplineNode: (
       state,
       action: PayloadAction<{
-        piplineID: string;
-        nodes: Node[];
-        id: string;
         position: { x: number; y: number };
         type: string;
-        data: object;
+        data: any;
       }>
     ) => {
       const payload = action.payload;
-      state = state.map((pipline) => {
-        if (pipline.id === payload.piplineID) {
-          pipline.nodes = [
-            ...payload.nodes,
-            {
-              id: payload.id,
-              position: payload.position,
-              type: payload.type,
-              data: payload.data,
-            },
-          ];
-        }
-        return pipline;
-      });
+      const newNodeID = uuid();
+      state.piplines[state.piplineID].nodes[newNodeID] = {
+        id: newNodeID,
+        position: payload.position,
+        type: payload.type,
+        data: payload.data,
+      };
     },
     removePiplineNode: (
       state,
       action: PayloadAction<{
-        piplineID: string;
         nodeId: string;
       }>
     ) => {
       const payload = action.payload;
-      state = state.map((pipline) => {
-        if (pipline.id === payload.piplineID) {
-          pipline.nodes = pipline.nodes.filter(
-            (node) => node.id !== payload.nodeId
-          );
-        }
-        return pipline;
-      });
+      delete state.piplines[state.piplineID].nodes[payload.nodeId];
     },
     appendPiplineEdge: (
       state,
       action: PayloadAction<{
-        piplineID: string | undefined;
         edge: Edge;
       }>
     ) => {
       const payload = action.payload;
-      state = state.map((pipline) => {
-        if (pipline.id === payload.piplineID) {
-          if (!pipline.edges) {
-            pipline.edges = [];
-          }
-          pipline.edges.push(payload.edge);
-        }
-        return pipline;
-      });
+      state.piplines[state.piplineID].edges[payload.edge.id] = payload.edge;
     },
     removePiplineEdge: (
       state,
       action: PayloadAction<{
-        piplineID: string;
         edgeId: string;
       }>
     ) => {
       const payload = action.payload;
-      state = state.map((pipline) => {
-        if (pipline.id === payload.piplineID) {
-          pipline.edges = pipline.edges?.filter(
-            (edge) => edge.id !== payload.edgeId
-          );
-        }
-        return pipline;
-      });
+      delete state.piplines[state.piplineID].edges[payload.edgeId];
     },
 
     updateActorNode: (
       state,
       action: PayloadAction<{
-        piplineID: string;
-        actorID: string;
         nodes: Node[];
       }>
     ) => {
       const payload = action.payload;
-      state = state.map((pipline) => {
-        if (pipline.id === payload.piplineID) {
-          pipline.actors = pipline.actors.map((actor) => {
-            if (actor.id === payload.actorID) {
-              actor.nodes = actor.nodes;
-            }
-            return actor;
-          });
-        }
-        return pipline;
-      });
+      state.piplines[state.piplineID].actors[state.actorID].nodes = arrayToObject(payload.nodes);
     },
     appendActorNode: (
       state,
       action: PayloadAction<{
-        piplineID: string;
-        actorID: string;
-        nodes: Node[];
-        id: string;
         position: { x: number; y: number };
         type: string;
-        data: object;
+        data: any;
       }>
     ) => {
       const payload = action.payload;
-      state = state.map((pipline) => {
-        if (pipline.id === payload.piplineID) {
-          pipline.actors = pipline.actors.map((actor) => {
-            if (actor.id === payload.actorID) {
-              actor.nodes = [
-                ...payload.nodes,
-                {
-                  id: payload.id,
-                  position: payload.position,
-                  type: payload.type,
-                  data: payload.data,
-                },
-              ];
-            }
-            return actor;
-          });
-        }
-        return pipline;
-      });
+      const newNodeID = uuid();
+      state.piplines[state.piplineID].actors[state.actorID].nodes[newNodeID] = {
+        id: newNodeID,
+        position: payload.position,
+        type: payload.type,
+        data: payload.data,
+      };
     },
     removeActorNode: (
       state,
       action: PayloadAction<{
-        piplineID: string;
-        actorID: string;
         nodeId: string;
       }>
     ) => {
       const payload = action.payload;
-      state = state.map((pipline) => {
-        if (pipline.id === payload.piplineID) {
-          pipline.actors = pipline.actors.map((actor) => {
-            if (actor.id === payload.actorID) {
-              actor.nodes = actor.nodes.filter(
-                (node) => node.id !== payload.nodeId
-              );
-            }
-            return actor;
-          });
-        }
-        return pipline;
-      });
+      delete state.piplines[state.piplineID].actors[state.actorID].nodes[payload.nodeId];
     },
     appendActorEdge: (
       state,
       action: PayloadAction<{
-        piplineID: string;
-        actorID: string;
         edge: Edge;
       }>
     ) => {
       const payload = action.payload;
-      state = state.map((pipline) => {
-        if (pipline.id === payload.piplineID) {
-          pipline.actors = pipline.actors.map((actor) => {
-            if (actor.id === payload.actorID) {
-              if (!actor.edges) {
-                actor.edges = [];
-              }
-              actor.edges.push(payload.edge);
-            }
-            return actor;
-          });
-        }
-        return pipline;
-      });
+      state.piplines[state.piplineID].actors[state.actorID].edges[payload.edge.id] = payload.edge;
     },
     removeActorEdge: (
       state,
       action: PayloadAction<{
-        piplineID: string;
-        actorID: string;
         edgeId: string;
       }>
     ) => {
       const payload = action.payload;
-      state = state.map((pipline) => {
-        if (pipline.id === payload.piplineID) {
-          pipline.actors = pipline.actors.map((actor) => {
-            if (actor.id === payload.actorID) {
-              actor.edges = actor.edges?.filter(
-                (edge) => edge.id !== payload.edgeId
-              );
-            }
-            return actor;
-          });
-        }
-        return pipline;
-      });
-    },
-
-    createNewActorNodes: (
-      state,
-      action: PayloadAction<{
-        actorID: string;
-      }>
-    ) => {
-      const payload = action.payload;
-      state.actors.push({ id: payload.actorID, nodes: [] });
+      console.log(state.piplines[state.piplineID].actors[state.actorID].edges[payload.edgeId]);
+      
+      delete state.piplines[state.piplineID].actors[state.actorID].edges[payload.edgeId];
     },
 
     changeNodeData: (
@@ -372,9 +241,7 @@ export const {
   changeNodeData,
   changeSelectedNode,
   appendNodeInput,
-  createNewActorNodes,
   updatePiplineNode,
-  updatePiplineNodePosition,
   appendPiplineNode,
   removePiplineNode,
   appendPiplineEdge,

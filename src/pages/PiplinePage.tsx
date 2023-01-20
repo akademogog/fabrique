@@ -11,9 +11,9 @@ interface PiplinePageProps {
 
 const PiplinePage: FC<PiplinePageProps> = ({ piplineID }) => {
   const nodes = useAppSelector((state: RootState) => objectToArray(state.flow.piplines[piplineID].nodes));
-  const edges = useAppSelector((state: RootState) => state.flow.piplines[piplineID].edges);
-  const { currentSelectedNode } = useAppSelector(
-    (state: RootState) => state.flow
+  const edges = useAppSelector((state: RootState) => objectToArray(state.flow.piplines[piplineID].edges));
+  const { areaId, nodeId } = useAppSelector(
+    (state: RootState) => state.flow.currentSelectedNode
   );
 
   return (
@@ -23,8 +23,8 @@ const PiplinePage: FC<PiplinePageProps> = ({ piplineID }) => {
           piplineID={piplineID}
           storeNodes={nodes}
           storeEdges={edges}
-          areaId={currentSelectedNode.areaId}
-          nodeId={currentSelectedNode.nodeId}
+          areaId={areaId}
+          nodeId={nodeId}
         />
         {/* <NodesEditor
           areaId={currentSelectedNode.areaId}

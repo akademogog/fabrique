@@ -3,9 +3,7 @@ import PiplinePage from "@/pages/PiplinePage";
 import ActorPage from "@/pages/ActorPage";
 
 const Main = () => {
-  const { route } = useRouteNode("");  
-
-  
+  const { route } = useRouteNode("");
 
   if (route.name === "projects") {
     return <PiplinePage piplineID={String(route.params.piplineID)} />;

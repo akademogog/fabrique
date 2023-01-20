@@ -1,5 +1,6 @@
 import FlowActor from "@/components/Flows/FlowActor";
 import { NodesEditor } from "@/components/NodesEditor";
+import { objectToArray } from "@/helpers/mapping";
 import { useAppSelector } from "@/store/hooks";
 import { RootState } from "@/store/store";
 import { FC } from "react";
@@ -10,12 +11,10 @@ interface ActorPageProps {
 }
 
 const ActorPage: FC<ActorPageProps> = ({ piplineID, actorID }) => {
-  const currentPipline = useAppSelector((state: RootState) =>
-    state.flow.find((pipline) => pipline.id === piplineID)
-  );
-  const { area, areaId, nodeId } = currentPipline?.currentSelectedNode;
-  const { nodes, edges } = currentPipline?.actors.find(
-    (actor) => actor.id === actorID
+  const nodes = useAppSelector((state: RootState) => objectToArray(state.flow.piplines[piplineID].actors[actorID].nodes));
+  const edges = useAppSelector((state: RootState) => objectToArray(state.flow.piplines[piplineID].actors[actorID].edges));
+  const { areaId, nodeId } = useAppSelector(
+    (state: RootState) => state.flow.currentSelectedNode
   );
 
   return (
