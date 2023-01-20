@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import uuid from "react-uuid";
 import style from "./NodesEditor.module.scss";
 import { appendNodeInput, changeNodeData } from "@/store/slicers/flowSlicer";
 import { NodeInputType, Node, SelectedNode } from "@/types/node.types";
 import { NodesEditorSection } from "./components/NodesEditorSection";
-import { UIInput } from "../UI";
+import { UIIButton, UIInput, UISelect } from "../UI";
 
 interface NodesEditorProps extends SelectedNode {}
 
@@ -14,8 +14,10 @@ export const NodesEditor: React.FC<NodesEditorProps> = ({ areaId, nodeId }) => {
   const actor = useAppSelector((state) =>
     state.flow.actors.find((actor) => actor.id === areaId)
   );
-  const selectedNode: Node | undefined =
-    actor && actor.nodes?.find((node) => node.id === nodeId);
+  const selectedNode: Node | undefined = useMemo(
+    () => actor && actor.nodes?.find((node) => node.id === nodeId),
+    [actor]
+  );
 
   const onInputChange = (e: any, id: string, type: NodeInputType) => {
     dispatch(
@@ -24,7 +26,7 @@ export const NodesEditor: React.FC<NodesEditorProps> = ({ areaId, nodeId }) => {
         nodeId: nodeId,
         inputId: id,
         value: e.target.value,
-        type
+        type,
       })
     );
   };
@@ -56,11 +58,13 @@ export const NodesEditor: React.FC<NodesEditorProps> = ({ areaId, nodeId }) => {
               value={selectedNode?.data.label}
               onChange={setName}
             />
-            <textarea name="" cols={30} rows={2}></textarea>
+            <textarea name="description" cols={30} rows={2}></textarea>
           </NodesEditorSection>
 
           <NodesEditorSection title="Inputs">
-            <button onClick={(e) => appendInput("inputs")}>append</button>
+            <UIIButton variant="green" onClick={() => appendInput("inputs")}>
+              append
+            </UIIButton>
             {selectedNode &&
               selectedNode.data.inputs.map((input) => (
                 <div key={input.id} className={style.nodesEditorInputBlock}>
@@ -69,16 +73,21 @@ export const NodesEditor: React.FC<NodesEditorProps> = ({ areaId, nodeId }) => {
                     value={input.value}
                     onChange={(e) => onInputChange(e, input.id, "inputs")}
                   />
-                  <select name="type">
-                    <option value="number">Number</option>
-                    <option value="integer">Integer</option>
-                    <option value="string">String</option>
-                  </select>
+                  <UISelect
+                    name="type"
+                    options={[
+                      { value: "number", title: "Number" },
+                      { value: "string", title: "String" },
+                      { value: "integer", title: "integer" },
+                    ]}
+                  />
                 </div>
               ))}
           </NodesEditorSection>
           <NodesEditorSection title="Outputs">
-            <button onClick={() => appendInput("outputs")}>append</button>
+            <UIIButton variant="green" onClick={() => appendInput("outputs")}>
+              append
+            </UIIButton>
             {selectedNode &&
               selectedNode.data.outputs.map((input) => (
                 <div key={input.id} className={style.nodesEditorInputBlock}>
@@ -87,11 +96,14 @@ export const NodesEditor: React.FC<NodesEditorProps> = ({ areaId, nodeId }) => {
                     value={input.value}
                     onChange={(e) => onInputChange(e, input.id, "outputs")}
                   />
-                  <select name="type">
-                    <option value="number">Number</option>
-                    <option value="integer">Integer</option>
-                    <option value="string">String</option>
-                  </select>
+                  <UISelect
+                    name="type"
+                    options={[
+                      { value: "number", title: "Number" },
+                      { value: "string", title: "String" },
+                      { value: "integer", title: "integer" },
+                    ]}
+                  />
                 </div>
               ))}
           </NodesEditorSection>
