@@ -11,7 +11,7 @@ import ReactFlow, {
   Edge,
 } from "reactflow";
 import "reactflow/dist/style.css";
-import { useAppDispatch } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   changeSelectedNode,
   updatePiplineNode,
@@ -19,13 +19,12 @@ import {
   removePiplineNode,
   appendPiplineEdge,
   removePiplineEdge,
-  updatePiplineNodePosition,
 } from "@/store/slicers/flowSlicer";
 import CustomNode from "../CustomNode/CustomNode";
 import { Link } from "react-router5";
+import { RootState } from "@/store/store";
 
 interface FlowPiplineProps {
-  piplineID: string;
   storeNodes: Node[] | undefined | null;
   storeEdges: Edge[] | undefined | null;
   areaId: string | undefined;
@@ -66,13 +65,15 @@ const defaultCustomNode = [
 ];
 
 const FlowPipline: FC<FlowPiplineProps> = ({
-  piplineID,
   storeNodes,
   storeEdges,
   areaId,
   nodeId,
 }) => {
   const dispatch = useAppDispatch();
+  const { piplineID } = useAppSelector(
+    (state: RootState) => state.flow.currentPage
+  );
   const [nodes, setNodes] = useState<Node[]>(storeNodes);
   const [isShowPaneMenu, setIsShowPaneMenu] = useState<boolean | undefined>();
   const [isShowNodeMenu, setIsShowNodeMenu] = useState<Node | undefined>();
@@ -94,7 +95,7 @@ const FlowPipline: FC<FlowPiplineProps> = ({
   }, [storeNodes]);
 
   const onNodesChange = useCallback(
-    (changes: NodeChange[]) => {      
+    (changes: NodeChange[]) => {
       setNodes((nds) => applyNodeChanges(changes, nds));
     },
     [setNodes]
@@ -137,11 +138,7 @@ const FlowPipline: FC<FlowPiplineProps> = ({
     }
     return { x, y };
   };
-  const appendNode = (
-    e: React.MouseEvent,
-    type: string,
-    data: object
-  ) => {
+  const appendNode = (e: React.MouseEvent, type: string, data: object) => {
     const { x, y } = getMouseViewportPosition(e);
     dispatch(
       appendPiplineNode({
@@ -154,7 +151,11 @@ const FlowPipline: FC<FlowPiplineProps> = ({
   };
   const onNodeClick = (_: React.MouseEvent, node: Node) => {
     dispatch(
-      changeSelectedNode({ area: 'pipline', areaId: piplineID, nodeId: node.id })
+      changeSelectedNode({
+        area: "pipline",
+        areaId: piplineID,
+        nodeId: node.id,
+      })
     );
     closeAllMenus();
   };
@@ -163,7 +164,7 @@ const FlowPipline: FC<FlowPiplineProps> = ({
       areaId === piplineID &&
       nodeId === (isShowNodeMenu && isShowNodeMenu.id)
     ) {
-      dispatch(changeSelectedNode({ area: 'pipline', areaId: "", nodeId: "" }));
+      dispatch(changeSelectedNode({ area: "pipline", areaId: "", nodeId: "" }));
     }
     dispatch(
       removePiplineNode({

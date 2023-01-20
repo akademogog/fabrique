@@ -11,7 +11,7 @@ import ReactFlow, {
   Edge,
 } from "reactflow";
 import "reactflow/dist/style.css";
-import { useAppDispatch } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   changeSelectedNode,
   updateActorNode,
@@ -22,10 +22,9 @@ import {
 } from "@/store/slicers/flowSlicer";
 import CustomNode from "../CustomNode/CustomNode";
 import { Link } from "react-router5";
+import { RootState } from "@/store/store";
 
 interface FlowPiplineProps {
-  piplineID: string;
-  actorID: string;
   storeNodes: Node[] | undefined | null;
   storeEdges: Edge[] | undefined | null;
   areaId: string | undefined;
@@ -66,13 +65,15 @@ const defaultCustomNode = [
 ];
 
 const FlowPipline: FC<FlowPiplineProps> = ({
-  piplineID,
   storeNodes,
   storeEdges,
   areaId,
   nodeId,
 }) => {
   const dispatch = useAppDispatch();
+  const { piplineID, actorID } = useAppSelector(
+    (state: RootState) => state.flow.currentPage
+  );
   const [nodes, setNodes] = useState<Node[]>(storeNodes);
   const [isShowPaneMenu, setIsShowPaneMenu] = useState<boolean | undefined>();
   const [isShowNodeMenu, setIsShowNodeMenu] = useState<Node | undefined>();
@@ -135,11 +136,7 @@ const FlowPipline: FC<FlowPiplineProps> = ({
     }
     return { x, y };
   };
-  const appendNode = (
-    e: React.MouseEvent,
-    type: string,
-    data: object
-  ) => {
+  const appendNode = (e: React.MouseEvent, type: string, data: object) => {
     const { x, y } = getMouseViewportPosition(e);
     dispatch(
       appendActorNode({
@@ -151,7 +148,9 @@ const FlowPipline: FC<FlowPiplineProps> = ({
     closeAllMenus();
   };
   const onNodeClick = (_: React.MouseEvent, node: Node) => {
-    dispatch(changeSelectedNode({ area: 'actor', areaId: piplineID, nodeId: node.id }));
+    dispatch(
+      changeSelectedNode({ area: "actor", areaId: piplineID, nodeId: node.id })
+    );
     closeAllMenus();
   };
   const removeNode = () => {
@@ -159,7 +158,7 @@ const FlowPipline: FC<FlowPiplineProps> = ({
       areaId === piplineID &&
       nodeId === (isShowNodeMenu && isShowNodeMenu.id)
     ) {
-      dispatch(changeSelectedNode({ area: 'actor', areaId: "", nodeId: "" }));
+      dispatch(changeSelectedNode({ area: "actor", areaId: "", nodeId: "" }));
     }
     dispatch(
       removeActorNode({
@@ -196,7 +195,7 @@ const FlowPipline: FC<FlowPiplineProps> = ({
         }
         onEdgeClick={(_, edge) => {
           console.log(edge.id);
-          
+
           dispatch(removeActorEdge({ edgeId: edge.id }));
         }}
         onPaneContextMenu={(e) => getMouseViewportPosition(e, "pane")}

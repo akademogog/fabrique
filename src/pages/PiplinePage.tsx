@@ -3,15 +3,10 @@ import { NodesEditor } from "@/components/NodesEditor";
 import { objectToArray } from "@/helpers/mapping";
 import { useAppSelector } from "@/store/hooks";
 import { RootState } from "@/store/store";
-import { FC } from "react";
 
-interface PiplinePageProps {
-  piplineID: string;
-}
-
-const PiplinePage: FC<PiplinePageProps> = ({ piplineID }) => {
-  const nodes = useAppSelector((state: RootState) => objectToArray(state.flow.piplines[piplineID].nodes));
-  const edges = useAppSelector((state: RootState) => objectToArray(state.flow.piplines[piplineID].edges));
+const PiplinePage = () => {
+  const nodes = useAppSelector((state: RootState) => objectToArray(state.flow.piplines[state.flow.currentPage.piplineID].nodes));
+  const edges = useAppSelector((state: RootState) => objectToArray(state.flow.piplines[state.flow.currentPage.piplineID].edges));
   const { areaId, nodeId } = useAppSelector(
     (state: RootState) => state.flow.currentSelectedNode
   );
@@ -20,7 +15,6 @@ const PiplinePage: FC<PiplinePageProps> = ({ piplineID }) => {
     <div>
       <div className="flowAreaContainer">
         <FlowPipline
-          piplineID={piplineID}
           storeNodes={nodes}
           storeEdges={edges}
           areaId={areaId}

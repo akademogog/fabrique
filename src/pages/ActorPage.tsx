@@ -1,18 +1,13 @@
 import FlowActor from "@/components/Flows/FlowActor";
 import { NodesEditor } from "@/components/NodesEditor";
 import { objectToArray } from "@/helpers/mapping";
-import { useAppSelector } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { createActor } from "@/store/slicers/flowSlicer";
 import { RootState } from "@/store/store";
-import { FC } from "react";
 
-interface ActorPageProps {
-  piplineID: string;
-  actorID: string;
-}
-
-const ActorPage: FC<ActorPageProps> = ({ piplineID, actorID }) => {
-  const nodes = useAppSelector((state: RootState) => objectToArray(state.flow.piplines[piplineID].actors[actorID].nodes));
-  const edges = useAppSelector((state: RootState) => objectToArray(state.flow.piplines[piplineID].actors[actorID].edges));
+const ActorPage = () => {
+  const nodes = useAppSelector((state: RootState) => objectToArray(state.flow.piplines[state.flow.currentPage.piplineID].actors[state.flow.currentPage.actorID].nodes));
+  const edges = useAppSelector((state: RootState) => objectToArray(state.flow.piplines[state.flow.currentPage.piplineID].actors[state.flow.currentPage.actorID].edges));
   const { areaId, nodeId } = useAppSelector(
     (state: RootState) => state.flow.currentSelectedNode
   );
@@ -21,8 +16,6 @@ const ActorPage: FC<ActorPageProps> = ({ piplineID, actorID }) => {
     <div>
       <div className="flowAreaContainer">
         <FlowActor
-          piplineID={piplineID}
-          actorID={actorID}
           storeNodes={nodes}
           storeEdges={edges}
           areaId={areaId}

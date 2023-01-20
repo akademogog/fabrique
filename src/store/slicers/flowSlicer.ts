@@ -22,19 +22,18 @@ interface IPipline {
 interface InitialState {
   piplines: { [id: string]: IPipline };
   currentSelectedNode: { area: string; areaId: string; nodeId: string };
-  piplineID: string | number;
-  actorID: string | number;
+  currentPage: { piplineID?: string | undefined; actorID?: string | undefined };
 }
 
 const initialState: InitialState = {
   piplines: {
-    '1': {
+    "1": {
       id: "1",
       nodes: nodes,
       edges: edges,
       actors: actors,
     },
-    '2': {
+    "2": {
       id: "2",
       nodes: nodes,
       edges: edges,
@@ -46,8 +45,10 @@ const initialState: InitialState = {
     areaId: "",
     nodeId: "",
   },
-  piplineID: '1',
-  actorID: '1',
+  currentPage: {
+    piplineID: "",
+    actorID: "",
+  },
 };
 
 export const counterSlice = createSlice({
@@ -61,7 +62,7 @@ export const counterSlice = createSlice({
       }>
     ) => {
       const payload = action.payload;
-      state.piplines[state.piplineID].nodes = arrayToObject(payload.nodes);
+      state.piplines[state.currentPage.piplineID].nodes = arrayToObject(payload.nodes);
     },
     appendPiplineNode: (
       state,
@@ -73,7 +74,7 @@ export const counterSlice = createSlice({
     ) => {
       const payload = action.payload;
       const newNodeID = uuid();
-      state.piplines[state.piplineID].nodes[newNodeID] = {
+      state.piplines[state.currentPage.piplineID].nodes[newNodeID] = {
         id: newNodeID,
         position: payload.position,
         type: payload.type,
@@ -87,7 +88,7 @@ export const counterSlice = createSlice({
       }>
     ) => {
       const payload = action.payload;
-      delete state.piplines[state.piplineID].nodes[payload.nodeId];
+      delete state.piplines[state.currentPage.piplineID].nodes[payload.nodeId];
     },
     appendPiplineEdge: (
       state,
@@ -96,7 +97,7 @@ export const counterSlice = createSlice({
       }>
     ) => {
       const payload = action.payload;
-      state.piplines[state.piplineID].edges[payload.edge.id] = payload.edge;
+      state.piplines[state.currentPage.piplineID].edges[payload.edge.id] = payload.edge;
     },
     removePiplineEdge: (
       state,
@@ -105,7 +106,7 @@ export const counterSlice = createSlice({
       }>
     ) => {
       const payload = action.payload;
-      delete state.piplines[state.piplineID].edges[payload.edgeId];
+      delete state.piplines[state.currentPage.piplineID].edges[payload.edgeId];
     },
 
     updateActorNode: (
@@ -115,7 +116,9 @@ export const counterSlice = createSlice({
       }>
     ) => {
       const payload = action.payload;
-      state.piplines[state.piplineID].actors[state.actorID].nodes = arrayToObject(payload.nodes);
+      state.piplines[state.currentPage.piplineID].actors[
+        state.currentPage.actorID
+      ].nodes = arrayToObject(payload.nodes);
     },
     appendActorNode: (
       state,
@@ -127,7 +130,7 @@ export const counterSlice = createSlice({
     ) => {
       const payload = action.payload;
       const newNodeID = uuid();
-      state.piplines[state.piplineID].actors[state.actorID].nodes[newNodeID] = {
+      state.piplines[state.currentPage.piplineID].actors[state.currentPage.actorID].nodes[newNodeID] = {
         id: newNodeID,
         position: payload.position,
         type: payload.type,
@@ -141,7 +144,9 @@ export const counterSlice = createSlice({
       }>
     ) => {
       const payload = action.payload;
-      delete state.piplines[state.piplineID].actors[state.actorID].nodes[payload.nodeId];
+      delete state.piplines[state.currentPage.piplineID].actors[
+        state.currentPage.actorID
+      ].nodes[payload.nodeId];
     },
     appendActorEdge: (
       state,
@@ -150,7 +155,10 @@ export const counterSlice = createSlice({
       }>
     ) => {
       const payload = action.payload;
-      state.piplines[state.piplineID].actors[state.actorID].edges[payload.edge.id] = payload.edge;
+      console.log(payload.edge.id);
+      state.piplines[state.currentPage.piplineID].actors[state.currentPage.actorID].edges[
+        payload.edge.id
+      ] = payload.edge;
     },
     removeActorEdge: (
       state,
@@ -159,9 +167,37 @@ export const counterSlice = createSlice({
       }>
     ) => {
       const payload = action.payload;
-      console.log(state.piplines[state.piplineID].actors[state.actorID].edges[payload.edgeId]);
-      
-      delete state.piplines[state.piplineID].actors[state.actorID].edges[payload.edgeId];
+      delete state.piplines[state.currentPage.piplineID].actors[state.currentPage.actorID].edges[
+        payload.edgeId
+      ];
+    },
+
+    changeCurrentPage: (
+      state,
+      action: PayloadAction<{
+        params: {
+          piplineID?: string | undefined;
+          actorID?: string | undefined;
+        };
+      }>
+    ) => {
+      const payload = action.payload;
+      state.currentPage = payload.params;
+    },
+
+    createActor: (
+      state,
+      action: PayloadAction<{
+        actorID: string;
+      }>
+    ) => {
+      const payload = action.payload;
+      console.log(payload.actorID);
+      state.piplines[state.currentPage.piplineID].actors[payload.actorID] = {
+        id: payload.actorID,
+        nodes: [],
+        edges: [],
+      };
     },
 
     changeNodeData: (
@@ -251,6 +287,8 @@ export const {
   removeActorNode,
   appendActorEdge,
   removeActorEdge,
+  changeCurrentPage,
+  createActor,
 } = counterSlice.actions;
 
 export default counterSlice.reducer;
