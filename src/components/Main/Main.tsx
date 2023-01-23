@@ -8,13 +8,15 @@ import FlowPage from "@/pages/FlowPage";
 const Main = () => {
   const dispatch = useAppDispatch();
   const { route } = useRouteNode("");
-  dispatch(
-    changeCurrentPage({
-      name: route.name ? route.name : "",
-      pipelineID: route.params.pipelineID ? route.params.pipelineID : "",
-      actorID: route.params.actorID ? route.params.actorID : "",
-    })
-  );
+  if (route) {
+    dispatch(
+      changeCurrentPage({
+        name: route.name ? route.name : "",
+        pipelineID: route.params.pipelineID ? route.params.pipelineID : "",
+        actorID: route.params.actorID ? route.params.actorID : "",
+      })
+    );
+  }
   const { name } = useAppSelector((state: RootState) => state.route);
 
   if (name === "projects" || name === "actor") {

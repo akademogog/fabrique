@@ -3,14 +3,14 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 
 interface InitialState {
   area: string,
-  areaId: string,
-  nodeId: string,
+  areaID: string,
+  nodeID: string,
 }
 
 const initialState: InitialState = {
   area: "",
-  areaId: "",
-  nodeId: "",
+  areaID: "",
+  nodeID: "",
 };
 
 export const selectedSlice = createSlice({
@@ -21,15 +21,13 @@ export const selectedSlice = createSlice({
       state,
       action: PayloadAction<{
         area: string
-        areaId: string;
-        nodeId: string;
+        areaID: string;
+        nodeID: string;
       }>
     ) => {
-      state = {
-        area: action.payload.area,
-        areaId: action.payload.areaId,
-        nodeId: action.payload.nodeId,
-      };
+      state.area = action.payload.area;
+      state.areaID = action.payload.areaID;
+      state.nodeID = action.payload.nodeID;
     },
   },
 });

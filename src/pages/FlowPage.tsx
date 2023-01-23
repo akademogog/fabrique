@@ -1,4 +1,4 @@
-import FlowPipeline from "@/components/Flows/FlowPipeline";
+import Flow from "@/components/Flows/Flow";
 import { NodesEditor } from "@/components/NodesEditor";
 import { objectToArray } from "@/helpers/mapping";
 import { useAppSelector } from "@/store/hooks";
@@ -29,14 +29,11 @@ const FlowPage = () => {
   return (
     <div>
       <div className="flowAreaContainer">
-        <FlowPipeline
+        <Flow
           storeNodes={nodes ? nodes : []}
           storeEdges={edges ? edges : []}
         />
-        {/* <NodesEditor
-          areaId={currentSelectedNode.areaId}
-          nodeId={currentSelectedNode.nodeId}
-        /> */}
+        <NodesEditor/>
       </div>
     </div>
   );
