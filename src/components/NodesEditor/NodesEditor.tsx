@@ -56,7 +56,7 @@ export const NodesEditor = () => {
       );
     } else {
       dispatch(
-        changeActorNodeData({
+        actor.changeActorNodeData({
           actorID: areaID,
           nodeID: nodeID,
           inputID: id,
@@ -79,7 +79,7 @@ export const NodesEditor = () => {
       );
     } else {
       dispatch(
-        changeActorNodeData({
+        actor.changeActorNodeData({
           actorID: areaID,
           nodeID: nodeID,
           inputID: id,
