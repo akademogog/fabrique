@@ -18,7 +18,7 @@ const PipelinesPage = () => {
       {pipelines && (
         <ul>
           {pipelines.map((pipeline) => (
-            <li>
+            <li key={pipeline.id}>
               <Link
                 routeName="projects"
                 routeParams={{

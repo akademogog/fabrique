@@ -50,6 +50,7 @@ export const NodesEditor: React.FC<NodesEditorProps> = ({ areaId, nodeId }) => {
       {actor && (
         <>
           <NodesEditorSection title="General">
+            <>
             <p>id: {selectedNode?.id}</p>
             <p>type: {selectedNode?.type}</p>
             <UIInput
@@ -59,6 +60,7 @@ export const NodesEditor: React.FC<NodesEditorProps> = ({ areaId, nodeId }) => {
               onChange={setName}
             />
             <textarea name="description" cols={30} rows={2}></textarea>
+            </>
           </NodesEditorSection>
 
           <NodesEditorSection title="Inputs">
