@@ -1,44 +1,93 @@
-import React, { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import uuid from "react-uuid";
 import style from "./NodesEditor.module.scss";
-import { appendNodeInput, changeNodeData } from "@/store/slicers/pipelinesSlicer";
 import { NodeInputType, Node, SelectedNode } from "@/types/node.types";
 import { NodesEditorSection } from "./components/NodesEditorSection";
 import { UIIButton, UIInput, UISelect } from "../UI";
+import { RootState } from "@/store/store";
+import { objectToArray } from "@/helpers/mapping";
+import { appendPipelineNodeInput, changePipelineNodeData } from "@/store/slicers/pipelinesSlicer";
 
-interface NodesEditorProps extends SelectedNode {}
-
-export const NodesEditor: React.FC<NodesEditorProps> = ({ areaId, nodeId }) => {
+export const NodesEditor = () => {
   const dispatch = useAppDispatch();
-  const actor = useAppSelector((state) =>
-    state.flow.actors.find((actor) => actor.id === areaId)
+  const { area, areaID, nodeID } = useAppSelector(
+    (state: RootState) => state.selected
   );
-  const selectedNode: Node | undefined = useMemo(
-    () => actor && actor.nodes?.find((node) => node.id === nodeId),
-    [actor]
-  );
+  const actor = useAppSelector((state) => {
+    if (area === "pipeline") {
+      const pipelines = objectToArray(state.pipelines);
+      return pipelines.find((pipeline) => pipeline.id === areaID);
+    }
+    if (area === "actor") {
+      const actors = objectToArray(state.actors);
+      return actors.find((actors) => actors.id === areaID);
+    }
+  });
+  const selectedNode: Node | undefined = useMemo(() => {
+    if (actor) {
+      const nodes = objectToArray(actor.nodes);
+      return nodes.find((node) => node.id === nodeID);
+    }
+  }, [actor]);
+  const inputs: any = useMemo(() => {
+    if (selectedNode) {
+      const inputs = objectToArray(selectedNode.data.inputs);
+      return inputs;
+    }
+  }, [selectedNode]);
+  const outputs: any = useMemo(() => {
+    if (selectedNode) {
+      const outputs = objectToArray(selectedNode.data.outputs);
+      return outputs;
+    }
+  }, [selectedNode]);
 
   const onInputChange = (e: any, id: string, type: NodeInputType) => {
-    dispatch(
-      changeNodeData({
-        areaId: areaId,
-        nodeId: nodeId,
-        inputId: id,
-        value: e.target.value,
-        type,
-      })
-    );
+    if (area === 'pipeline') {
+      dispatch(
+        changePipelineNodeData({
+          piplineID: areaID,
+          nodeID: nodeID,
+          inputID: id,
+          value: e.target.value,
+          type,
+        })
+      );
+    } else {
+      dispatch(
+        changeActorNodeData({
+          actorID: areaID,
+          nodeID: nodeID,
+          inputID: id,
+          value: e.target.value,
+          type,
+        })
+      );
+    }
+    
   };
   const appendInput = (type: NodeInputType) => {
-    dispatch(
-      appendNodeInput({
-        areaId: areaId,
-        nodeId: nodeId,
-        type,
-        input: { id: uuid(), type: "float", value: "" },
-      })
-    );
+    if (area === 'pipeline') {
+      dispatch(
+        appendPipelineNodeInput({
+          piplineID: areaID,
+          nodeID: nodeID,
+          type,
+          input: { id: uuid(), type: "float", value: "" },
+        })
+      );
+    } else {
+      dispatch(
+        changeActorNodeData({
+          actorID: areaID,
+          nodeID: nodeID,
+          inputID: id,
+          value: e.target.value,
+          type,
+        })
+      );
+    }
   };
 
   const setName = (e: any) => {
@@ -68,7 +117,7 @@ export const NodesEditor: React.FC<NodesEditorProps> = ({ areaId, nodeId }) => {
               append
             </UIIButton>
             {selectedNode &&
-              selectedNode.data.inputs.map((input) => (
+              inputs.map((input) => (
                 <div key={input.id} className={style.nodesEditorInputBlock}>
                   <UIInput
                     placeholder="name"
@@ -91,7 +140,7 @@ export const NodesEditor: React.FC<NodesEditorProps> = ({ areaId, nodeId }) => {
               append
             </UIIButton>
             {selectedNode &&
-              selectedNode.data.outputs.map((input) => (
+              outputs.map((input) => (
                 <div key={input.id} className={style.nodesEditorInputBlock}>
                   <UIInput
                     placeholder="name"

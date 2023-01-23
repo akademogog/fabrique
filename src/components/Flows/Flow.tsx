@@ -26,18 +26,18 @@ import { changeSelectedNode } from "@/store/slicers/selectedSlicer";
 import { defaultCustomNode } from "@/helpers/constants";
 import { appendActorEdge, appendActorNode, createActor, removeActorEdge, removeActorNode, updateActorNode } from "@/store/slicers/actorsSlicer";
 
-interface FlowPipelineProps {
+interface FlowProps {
   storeNodes: Node[];
   storeEdges: Edge[];
 }
 
-const FlowPipeline: FC<FlowPipelineProps> = ({
+const Flow: FC<FlowProps> = ({
   storeNodes,
   storeEdges,
 }) => {
   const dispatch = useAppDispatch();
   const { pipelineID, actorID } = useAppSelector((state: RootState) => state.route);
-  const { area, areaId, nodeId } = useAppSelector(
+  const { area, areaID, nodeID } = useAppSelector(
     (state: RootState) => state.selected
   );
   const [nodes, setNodes] = useState<Node[]>(storeNodes);
@@ -150,31 +150,31 @@ const FlowPipeline: FC<FlowPipelineProps> = ({
     dispatch(
       changeSelectedNode({
         area: actorID ? "actor" : "pipeline",
-        areaId: actorID ? actorID : pipelineID,
-        nodeId: node.id,
+        areaID: actorID ? actorID : pipelineID,
+        nodeID: node.id,
       })
     );
     closeAllMenus();
   };
   const removeNode = () => {
     if (
-      ((area === "pipeline" && areaId === pipelineID) || (area === "actor" && areaId === actorID)) &&
-      nodeId === (isShowNodeMenu && isShowNodeMenu.id)
+      ((area === "pipeline" && areaID === pipelineID) || (area === "actor" && areaID === actorID)) &&
+      nodeID === (isShowNodeMenu && isShowNodeMenu.id)
     ) {
-      dispatch(changeSelectedNode({ area: "", areaId: "", nodeId: "" }));
+      dispatch(changeSelectedNode({ area: "", areaID: "", nodeID: "" }));
     }
     if (actorID) {
       dispatch(
         removeActorNode({
           actorID,
-          nodeId: isShowNodeMenu ? isShowNodeMenu.id : "",
+          nodeID: isShowNodeMenu ? isShowNodeMenu.id : "",
         })
       );
     } else {
       dispatch(
         removePipelineNode({
           pipelineID,
-          nodeId: isShowNodeMenu ? isShowNodeMenu.id : "",
+          nodeID: isShowNodeMenu ? isShowNodeMenu.id : "",
         })
       );
     }
@@ -217,7 +217,6 @@ const FlowPipeline: FC<FlowPipelineProps> = ({
         nodeTypes={nodeTypes}
         connectionLineStyle={{ strokeWidth: 6, stroke: "steelblue" }}
         nodeOrigin={[0.5, 0]}
-        fitView
         onNodesChange={onNodesChange}
         onConnect={onConnect}
         onNodeDragStop={onNodeDragStop}
@@ -303,4 +302,4 @@ const FlowPipeline: FC<FlowPipelineProps> = ({
   );
 };
 
-export default FlowPipeline;
+export default Flow;

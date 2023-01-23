@@ -57,12 +57,12 @@ export const pipelinesSlice = createSlice({
       state,
       action: PayloadAction<{
         pipelineID: string;
-        nodeId: string;
+        nodeID: string;
       }>
     ) => {
       const payload = action.payload;
       if (payload.pipelineID) {
-        delete state[payload.pipelineID].nodes[payload.nodeId];
+        delete state[payload.pipelineID].nodes[payload.nodeID];
       }
     },
     appendPipelineEdge: (
@@ -100,73 +100,51 @@ export const pipelinesSlice = createSlice({
       };
     },
 
-    // changeNodeData: (
-    //   state,
-    //   action: PayloadAction<{
-    //     areaId: string;
-    //     nodeId: string;
-    //     value: string;
-    //     inputId: string;
-    //     type: NodeInputType;
-    //   }>
-    // ) => {
-    //   const payload = action.payload;
-    //   state.actors = state.actors.map((actor: Actor) => {
-    //     if (actor.id === payload.areaId) {
-    //       actor.nodes?.map((node) => {
-    //         if (node.id === payload.nodeId) {
-    //           node.data[payload.type].map(
-    //             (input: NodeControlInput | NodeControlOutput) => {
-    //               if (input.id === payload.inputId) {
-    //                 input.value = payload.value;
-    //               }
-    //               return input;
-    //             }
-    //           );
-    //         }
-    //         return node;
-    //       });
-    //     }
-    //     return actor;
-    //   });
-    // },
-    // appendNodeInput: (
-    //   state,
-    //   action: PayloadAction<{
-    //     areaId: string;
-    //     nodeId: string;
-    //     type: NodeInputType;
-    //     input: NodeControlInput | NodeControlOutput;
-    //   }>
-    // ) => {
-    //   const payload = action.payload;
-    //   state.actors = state.actors.map((actor: Actor) => {
-    //     if (actor.id === payload.areaId) {
-    //       actor.nodes?.map((node) => {
-    //         if (node.id === payload.nodeId) {
-    //           node.data[payload.type] = [
-    //             ...node.data[payload.type],
-    //             payload.input,
-    //           ];
-    //         }
-    //         return node;
-    //       });
-    //     }
-    //     return actor;
-    //   });
-    // },
+    changePipelineNodeData: (
+      state,
+      action: PayloadAction<{
+        piplineID: string;
+        nodeID: string;
+        value: string;
+        inputID: string;
+        type: NodeInputType;
+      }>
+    ) => {
+      const payload = action.payload;
+      state[payload.piplineID].nodes[payload.nodeID].data[payload.type][payload.inputID] = {
+        ...state[payload.piplineID].nodes[payload.nodeID].data[payload.type][payload.inputID],
+        value: payload.value
+      }
+    },
+    appendPipelineNodeInput: (
+      state,
+      action: PayloadAction<{
+        piplineID: string;
+        nodeID: string;
+        type: NodeInputType;
+        input: NodeControlInput | NodeControlOutput;
+      }>
+    ) => {
+      const payload = action.payload;
+      console.log(payload);
+      console.log(state[payload.piplineID].nodes[payload.nodeID].data[payload.type]);
+      state[payload.piplineID].nodes[payload.nodeID].data[payload.type] = {
+        ...state[payload.piplineID].nodes[payload.nodeID].data[payload.type],
+        [payload.input.id]: payload.input
+      };
+    },
   },
 });
 
 export const {
-  // changeNodeData,
-  // appendNodeInput,
   updatePipelineNode,
   appendPipelineNode,
   removePipelineNode,
   appendPipelineEdge,
   removePipelineEdge,
   createPipeline,
+  changePipelineNodeData,
+  appendPipelineNodeInput,
 } = pipelinesSlice.actions;
 
 export default pipelinesSlice.reducer;

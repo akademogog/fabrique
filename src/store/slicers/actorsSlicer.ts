@@ -46,11 +46,11 @@ export const actorsSlice = createSlice({
       state,
       action: PayloadAction<{
         actorID: string;
-        nodeId: string;
+        nodeID: string;
       }>
     ) => {
       const payload = action.payload;
-      delete state[payload.actorID].nodes[payload.nodeId];
+      delete state[payload.actorID].nodes[payload.nodeID];
     },
     appendActorEdge: (
       state,
