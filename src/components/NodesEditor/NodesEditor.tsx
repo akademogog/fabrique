@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import uuid from "react-uuid";
 import style from "./NodesEditor.module.scss";
-import { appendNodeInput, changeNodeData } from "@/store/slicers/flowSlicer";
+import { appendNodeInput, changeNodeData } from "@/store/slicers/pipelinesSlicer";
 import { NodeInputType, Node, SelectedNode } from "@/types/node.types";
 import { NodesEditorSection } from "./components/NodesEditorSection";
 import { UIIButton, UIInput, UISelect } from "../UI";

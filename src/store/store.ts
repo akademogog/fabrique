@@ -1,9 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit'
-import flowReducer from './slicers/flowSlicer'
+import pipelinesReducer from './slicers/pipelinesSlicer'
+import actorsReducer from './slicers/actorsSlicer'
+import routeReduser from './slicers/routeSlicer'
+import selectedReduser from './slicers/selectedSlicer'
 
 export const store = configureStore({
   reducer: {
-    flow: flowReducer,
+    pipelines: pipelinesReducer,
+    actors: actorsReducer,
+    route: routeReduser,
+    selected: selectedReduser,
   },
 })
 

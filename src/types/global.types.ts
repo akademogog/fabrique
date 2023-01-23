@@ -2,12 +2,7 @@ export interface Position {
   x: number;
   y: number;
 }
+import { Edge as FlowEdge } from "reactflow";
 export interface Edges {
-  [id: string]: {
-    id: string;
-    source: string | null;
-    target: string | null;
-    sourceHandle?: string | null;
-    targetHandle?: string | null;
-  }
+  [id: string]: FlowEdge
 }

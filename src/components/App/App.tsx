@@ -9,7 +9,7 @@ const App = () => {
         <Main />
       </main>
     </div>
-  )
-}
+  );
+};
 
 export default App;

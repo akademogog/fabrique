@@ -1,60 +1,30 @@
-import { Link, useRouteNode } from "react-router5";
-import PiplinePage from "@/pages/PiplinePage";
-import ActorPage from "@/pages/ActorPage";
+import { useRouteNode } from "react-router5";
+import PipelinesPage from "@/pages/PipelinesPage";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { changeCurrentPage, createActor } from "@/store/slicers/flowSlicer";
 import { RootState } from "@/store/store";
+import { changeCurrentPage } from "@/store/slicers/routeSlicer";
+import FlowPage from "@/pages/FlowPage";
 
 const Main = () => {
   const dispatch = useAppDispatch();
   const { route } = useRouteNode("");
+  dispatch(
+    changeCurrentPage({
+      name: route.name ? route.name : "",
+      pipelineID: route.params.pipelineID ? route.params.pipelineID : "",
+      actorID: route.params.actorID ? route.params.actorID : "",
+    })
+  );
+  const { name } = useAppSelector((state: RootState) => state.route);
 
-  dispatch(changeCurrentPage({ params: route.params }));
-
-  if (route.name === "projects") {
-    return <PiplinePage />;
+  if (name === "projects" || name === "actor") {
+    return <FlowPage />;
   }
-
-  if (route.name === "actor") {
-    return <ActorPage />;
-  }
-
-  if (route.name === "home") {
+  if (name === "home") {
     return (
-      <div>
-        <Link
-          routeName="projects"
-          routeParams={{
-            piplineID: "1",
-          }}
-        >
-          projects 1
-        </Link>
-      </div>
+      <PipelinesPage />
     );
   }
-
-  // if (route.name === "projects.actor") {
-  //   const currentActor = actors.find(
-  //     (actor) => actor.id == route.params.actorID
-  //   );
-
-  //   if (!currentActor) {
-  //     dispatch(createNewActorNodes({actorID: String(route.params.actorID)}));
-  //   }
-
-  //   return (
-  //     <div className="flowAreaContainer">
-  //       <FlowActor
-  //         area={"actor"}
-  //         actorID={String(route.params.actorID)}
-  //         storeNodes={currentActor && currentActor.nodes}
-  //         storeEdges={currentActor && currentActor.edges}
-  //       />
-  //       <NodesEditor areaId={areaId} nodeId={nodeId} />
-  //     </div>
-  //   );
-  // }
 
   return <div>list</div>;
 };

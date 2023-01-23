@@ -1,4 +1,5 @@
 import { Position } from "./global.types";
+import {Node as FlowNode} from "reactflow";
 
 export type NodeType = string;
 export type NodeInputType = 'inputs' | 'outputs';
@@ -19,13 +20,7 @@ export interface NodeData {
 }
 
 export interface Node {
-  [id: string]: {
-    id: string;
-    type: NodeType;
-    data: NodeData;
-    position: Position;
-    name?: string;
-  }
+  [id: string]: FlowNode
 }
 
 export interface SelectedNode {
