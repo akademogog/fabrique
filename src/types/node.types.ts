@@ -1,0 +1,29 @@
+import { Position } from "./global.types";
+import {Node as FlowNode} from "reactflow";
+
+export type NodeType = string;
+export type NodeInputType = 'inputs' | 'outputs';
+
+interface NodeControl {
+  id: string;
+  type: "float" | "integer" | "string";
+  value: string;
+  color?: "red" | "green" | "yellow";
+}
+
+export interface NodeControlInput extends NodeControl {}
+export interface NodeControlOutput extends NodeControl {}
+export interface NodeData {
+  label: string;
+  inputs: NodeControlInput[] | NodeControlOutput[];
+  outputs: NodeControlOutput[];
+}
+
+export interface Node {
+  [id: string]: FlowNode
+}
+
+export interface SelectedNode {
+  areaID: string;
+  nodeID: string;
+}

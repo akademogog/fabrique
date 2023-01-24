@@ -1,13 +1,33 @@
+import { objectToArray } from "@/helpers/mapping";
+import { NodeData } from "@/types/node.types";
+import { useMemo } from "react";
 import { Handle, Position } from "reactflow";
-import style from './CustomNode.module.scss'
+import style from './CustomNode.module.scss';
 
-const ConstantsNode = ({ data }) => {  
+interface customNodeProps{
+  data: NodeData
+};
+
+const ConstantsNode: React.FC<customNodeProps> = ({ data }) => {
+  const inputs: any = useMemo(() => {
+    if (data) {
+      const inputs = objectToArray(data.inputs);
+      return inputs;
+    }
+  }, [data]);
+  const outputs: any = useMemo(() => {
+    if (data) {
+      const outputs = objectToArray(data.outputs);
+      return outputs;
+    }
+  }, [data]);
+
   return (
     <>
       <div className={`${style.customNode}`}>
         <p className={`${style.customNodeLabel}`}>{data.label}</p>
 
-        {data.outputs.map((e) => (
+        {outputs.map((e) => (
           <div className={`${style.rightHandle}`} key={e.id}>
             <span className={`${style.handleText}`}>{e.value}</span>
             <Handle
@@ -20,7 +40,7 @@ const ConstantsNode = ({ data }) => {
           </div>
         ))}
         
-        {data.inputs.map((e) => (
+        {inputs.map((e) => (
           <div className={`${style.leftHandle}`} key={e.id}>
             <Handle
               id={e.id}
