@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { Actor } from "@/types/actor.types";
-import { Edge, Node as FlowNode } from "reactflow";
+import { Edge } from "reactflow";
+import { Node } from "@/types/node.types";
 import { arrayToObject } from "@/helpers/mapping";
 import { NodeControlInput, NodeControlOutput, NodeInputType } from "@/types/node.types";
 
@@ -19,7 +20,7 @@ export const actorsSlice = createSlice({
       state,
       action: PayloadAction<{
         actorID: string;
-        nodes: FlowNode[];
+        nodes: Node[];
       }>
     ) => {
       const payload = action.payload;
@@ -109,7 +110,7 @@ export const actorsSlice = createSlice({
       const payload = action.payload;
       state[payload.actorID].nodes[payload.nodeID].data[payload.type][payload.inputID] = {
         ...state[payload.actorID].nodes[payload.nodeID].data[payload.type][payload.inputID],
-        value: payload.value
+        code: payload.value
       }
     },
     appendActorNodeInput: (

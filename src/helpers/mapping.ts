@@ -18,7 +18,7 @@ export const getObjectKeys = (object: any) => {
   return array;
 };
 
-export const arrayToObject = (array: []) => {
+export const arrayToObject = (array: any[]) => {
   const object: any = {};
   array.forEach((e: any) => {
     object[e.id] = e;
