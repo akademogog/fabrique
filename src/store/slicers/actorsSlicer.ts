@@ -88,6 +88,15 @@ export const actorsSlice = createSlice({
         edges: {},
       };
     },
+    removeActor: (
+      state,
+      action: PayloadAction<{
+        actorID: string;
+      }>
+    ) => {
+      const payload = action.payload;
+      delete state[payload.actorID];
+    },
     changeActorNodeData: (
       state,
       action: PayloadAction<{
@@ -129,6 +138,7 @@ export const {
   appendActorEdge,
   removeActorEdge,
   createActor,
+  removeActor,
   changeActorNodeData,
   appendActorNodeInput,
 } = actorsSlice.actions;
