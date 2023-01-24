@@ -2,7 +2,7 @@ import { Position } from "./global.types";
 import {Node as FlowNode} from "reactflow";
 
 export type NodeType = string;
-export type NodeInputType = 'inputs' | 'outputs';
+export type NodeInputType = 'g_ports_in' | 'g_ports_out';
 
 interface NodeControl {
   id: string;
@@ -13,17 +13,37 @@ interface NodeControl {
 
 export interface NodeControlInput extends NodeControl {}
 export interface NodeControlOutput extends NodeControl {}
-export interface NodeData {
-  label: string;
-  inputs: NodeControlInput[] | NodeControlOutput[];
-  outputs: NodeControlOutput[];
-}
 
 export interface Node {
-  [id: string]: FlowNode
+  [id: string]: FlowNode; 
 }
 
 export interface SelectedNode {
   areaID: string;
   nodeID: string;
+}
+
+export type portData = {
+  code: string,
+  id_: string,
+  name: string,
+  required: boolean,
+  schema_: string,
+  special: boolean,
+  type_: string,
+  visible: boolean,
+}
+
+export type portDatas = portData[]
+
+export type NodeData = {
+  name?: string;
+  g_ports_in?: portDatas[];
+  g_ports_out?: portDatas[];
+  description?: string;
+  schema_?: string;
+  type_?: string;
+  group_type_?: string;
+  ui_config?: any;
+  category?: 'StructOps' | 'IO' | 'Conditional' | 'Funcional' | 'Stateful' | 'Misc';
 }

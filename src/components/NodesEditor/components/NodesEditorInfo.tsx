@@ -1,7 +1,14 @@
-import React from 'react'
+import React from "react";
 
-export const NodesEditorInfo = () => {
-  return (
-    <div>NodesEditorInfo</div>
-  )
+interface NodesEditorInfoProps {
+  id: string;
+  type?: string;
 }
+export const NodesEditorInfo: React.FC<NodesEditorInfoProps> = ({id, type}) => {
+  return (
+    <>
+      <p>id: {id}</p>
+      <p>type: {type}</p>
+    </>
+  );
+};
