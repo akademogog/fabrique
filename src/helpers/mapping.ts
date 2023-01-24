@@ -1,34 +1,33 @@
+import { customNode } from "@/types/groupPorts.types";
 import uuid from "react-uuid";
-import { defaultCustomNode } from "./constants";
+import { defaultCustomNodeActor } from "./constants";
 
 export const objectToArray = (object: any) => {
   const array = [];
   for (const key in object) {
     array.push(object[key]);
-  }  
+  }
   return array;
-}
+};
 
 export const getObjectKeys = (object: any) => {
   const array = [];
   for (const key in object) {
     array.push(key);
-  }  
+  }
   return array;
-}
+};
 
 export const arrayToObject = (array: any[]) => {
   const object: any = {};
   array.forEach((e: any) => {
     object[e.id] = e;
-  });  
+  });
   return object;
-}
+};
 
-export const createNodeData = (key: string) => {
-  const inputsData = defaultCustomNode[
-    key
-  ].input_groups.map((group) => {
+export const createNodeData = (key: string, UIParams: customNode) => {
+  const inputsData = UIParams[key].input_groups.map((group) => {
     const inputData = [
       {
         code: "",
@@ -44,9 +43,7 @@ export const createNodeData = (key: string) => {
     return inputData;
   });
 
-  const outputsData = defaultCustomNode[
-    key
-  ].output_groups.map((group) => {
+  const outputsData = UIParams[key].output_groups.map((group) => {
     const outputData = [
       {
         code: "",
@@ -63,15 +60,32 @@ export const createNodeData = (key: string) => {
   });
 
   return {
-    category: "Conditional",
-    description: "Filters by \"is_true\" signal",
+    category: "",
+    description: "",
     label: key,
-    g_ports_in: inputsData,
-    g_ports_out: outputsData,
+    g_ports_in: key === "Actor" || key === "Topic" ? [] : inputsData,
+    g_ports_out: key === "Actor" || key === "Topic" ? [] : outputsData,
     group_type_: null,
-    name: "Filter",
+    name: key,
     schema_: "",
     type_: key,
     ui_config: null,
+  };
+};
+
+export const getPipelineJson = (pipelineID: string) => {
+  const jsonLocalState = localStorage.getItem("persist:root");
+  if (jsonLocalState) {
+    const localeState = JSON.parse(jsonLocalState);
+    const localePipelines = JSON.parse(localeState.pipelines);
+    const localeActors = JSON.parse(localeState.actors);
+    const currentLocalePilpeline = localePipelines[pipelineID];
+    const currentLocalePilpelineNodes = currentLocalePilpeline.nodes;
+    let currentLocalePilpelineActor: any = {};
+    for (const key in currentLocalePilpelineNodes) {
+      currentLocalePilpelineActor[key] = localeActors[key];
+    }
+    currentLocalePilpeline["actors"] = currentLocalePilpelineActor;
+    return currentLocalePilpeline;
   }
-}
+};

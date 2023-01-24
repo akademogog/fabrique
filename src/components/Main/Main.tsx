@@ -1,5 +1,5 @@
 import { useRouteNode } from "react-router5";
-import PipelinesPage from "@/pages/PipelinesPage";
+import PipelinesPage from "@/pages/PipelinesPage/PipelinesPage";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { RootState } from "@/store/store";
 import { changeCurrentPage } from "@/store/slicers/routeSlicer";

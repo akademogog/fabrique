@@ -1,7 +1,7 @@
 import { objectToArray } from "@/helpers/mapping";
 import { useAppSelector } from "@/store/hooks";
 import { NodeData } from "@/types/node.types";
-import { useEffect, useMemo, useState } from "react"
+import { useMemo } from "react"
 import { Node } from "reactflow";
 
 

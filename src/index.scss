@@ -4,11 +4,24 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: sans-serif;
 }
 
 .react-flow__edge-path {
   stroke: steelblue;
   stroke-width: 6
+}
+
+.react-flow__node.selected .custom-node {
+  border-color: black;
+  .custom-node_label {
+    background: #2a435f!important;
+    color: #fff!important;
+  }
+}
+
+.react-flow__pane {
+  user-select: none;
 }
 
 .menu {

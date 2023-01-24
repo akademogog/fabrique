@@ -1,8 +1,6 @@
 import { useCallback, useState, FC, useMemo, useEffect } from "react";
 import uuid from "react-uuid";
 import ReactFlow, {
-  MiniMap,
-  Controls,
   Background,
   applyNodeChanges,
   Node,
@@ -23,16 +21,24 @@ import CustomNode from "../CustomNode/CustomNode";
 import { Link } from "react-router5";
 import { RootState } from "@/store/store";
 import { changeSelectedNode } from "@/store/slicers/selectedSlicer";
-import { defaultCustomNode } from "@/helpers/constants";
+import {
+  defaultCustomNodeActor,
+  defaultCustomNodePipeline,
+} from "@/helpers/constants";
 import {
   appendActorEdge,
   appendActorNode,
   createActor,
+  removeActor,
   removeActorEdge,
   removeActorNode,
   updateActorNode,
 } from "@/store/slicers/actorsSlicer";
-import { createNodeData, getObjectKeys, objectToArray } from "@/helpers/mapping";
+import {
+  createNodeData,
+  getObjectKeys,
+  objectToArray,
+} from "@/helpers/mapping";
 
 interface FlowProps {
   storeNodes: Node[];
@@ -183,6 +189,11 @@ const Flow: FC<FlowProps> = ({ storeNodes, storeEdges }) => {
           nodeID: isShowNodeMenu ? isShowNodeMenu.id : "",
         })
       );
+      dispatch(
+        removeActor({
+          actorID: isShowNodeMenu ? isShowNodeMenu.id : "",
+        })
+      );
     }
     setIsShowNodeMenu(undefined);
   };
@@ -243,9 +254,8 @@ const Flow: FC<FlowProps> = ({ storeNodes, storeEdges }) => {
         onMoveEnd={(_, viewport) =>
           setPosition({ ...position, viewportPosition: viewport })
         }
+        fitView
       >
-        <MiniMap />
-        <Controls />
         {isShowPaneMenu && (
           <div
             className="menu"
@@ -254,12 +264,23 @@ const Flow: FC<FlowProps> = ({ storeNodes, storeEdges }) => {
               top: position.mouseViewportPosition.y,
             }}
           >
-            {getObjectKeys(defaultCustomNode).map((nodeDatas) => (
+            {getObjectKeys(
+              actorID ? defaultCustomNodeActor : defaultCustomNodePipeline
+            ).map((nodeDatas) => (
               <button
                 key={uuid()}
                 className="menuButton"
                 onClick={(e) => {
-                  appendNode(e, "customNode", createNodeData(nodeDatas));
+                  appendNode(
+                    e,
+                    "customNode",
+                    createNodeData(
+                      nodeDatas,
+                      actorID
+                        ? defaultCustomNodeActor
+                        : defaultCustomNodePipeline
+                    )
+                  );
                 }}
               >
                 {nodeDatas}
