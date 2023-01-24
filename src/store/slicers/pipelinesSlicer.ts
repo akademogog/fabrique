@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { Node } from "@/types/node.types";
+import { Node, NodeControlInput, NodeControlOutput, NodeInputType } from "@/types/node.types";
 import { Edge, Node as FlowNode } from "reactflow";
 import { edges, nodes } from "@/mockups/flowState";
 import { arrayToObject } from "@/helpers/mapping";

@@ -3,6 +3,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { Actor } from "@/types/actor.types";
 import { Edge, Node as FlowNode } from "reactflow";
 import { arrayToObject } from "@/helpers/mapping";
+import { NodeControlInput, NodeControlOutput, NodeInputType } from "@/types/node.types";
 
 interface InitialState {
   [id: string]: Actor;
