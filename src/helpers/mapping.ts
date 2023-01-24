@@ -63,12 +63,29 @@ export const createNodeData = (key: string, UIParams: customNode) => {
     category: "",
     description: "",
     label: key,
-    g_ports_in: (key === "Actor" || key === "Topic") ? [] : inputsData,
-    g_ports_out: (key === "Actor" || key === "Topic") ? [] : outputsData,
+    g_ports_in: key === "Actor" || key === "Topic" ? [] : inputsData,
+    g_ports_out: key === "Actor" || key === "Topic" ? [] : outputsData,
     group_type_: null,
     name: key,
     schema_: "",
     type_: key,
     ui_config: null,
   };
+};
+
+export const getPipelineJson = (pipelineID: string) => {
+  const jsonLocalState = localStorage.getItem("persist:root");
+  if (jsonLocalState) {
+    const localeState = JSON.parse(jsonLocalState);
+    const localePipelines = JSON.parse(localeState.pipelines);
+    const localeActors = JSON.parse(localeState.actors);
+    const currentLocalePilpeline = localePipelines[pipelineID];
+    const currentLocalePilpelineNodes = currentLocalePilpeline.nodes;
+    let currentLocalePilpelineActor: any = {};
+    for (const key in currentLocalePilpelineNodes) {
+      currentLocalePilpelineActor[key] = localeActors[key];
+    }
+    currentLocalePilpeline["actors"] = currentLocalePilpelineActor;
+    return currentLocalePilpeline;
+  }
 };
