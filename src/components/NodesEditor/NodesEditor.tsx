@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import uuid from "react-uuid";
 import style from "./NodesEditor.module.scss";
@@ -8,6 +8,7 @@ import { UIIButton, UIInput, UISelect } from "../UI";
 import { RootState } from "@/store/store";
 import { objectToArray } from "@/helpers/mapping";
 import { appendPipelineNodeInput, changePipelineNodeData } from "@/store/slicers/pipelinesSlicer";
+import { appendActorNodeInput, changeActorNodeData } from "@/store/slicers/actorsSlicer";
 
 export const NodesEditor = () => {
   const dispatch = useAppDispatch();
@@ -79,12 +80,11 @@ export const NodesEditor = () => {
       );
     } else {
       dispatch(
-        actor.changeActorNodeData({
+        appendActorNodeInput({
           actorID: areaID,
           nodeID: nodeID,
-          inputID: id,
-          value: e.target.value,
           type,
+          input: { id: uuid(), type: "float", value: "" },
         })
       );
     }

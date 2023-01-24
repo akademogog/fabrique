@@ -97,7 +97,6 @@ export const pipelinesSlice = createSlice({
         edges: {},
       };
     },
-
     changePipelineNodeData: (
       state,
       action: PayloadAction<{
@@ -124,8 +123,6 @@ export const pipelinesSlice = createSlice({
       }>
     ) => {
       const payload = action.payload;
-      console.log(payload);
-      console.log(state[payload.piplineID].nodes[payload.nodeID].data[payload.type]);
       state[payload.piplineID].nodes[payload.nodeID].data[payload.type] = {
         ...state[payload.piplineID].nodes[payload.nodeID].data[payload.type],
         [payload.input.id]: payload.input

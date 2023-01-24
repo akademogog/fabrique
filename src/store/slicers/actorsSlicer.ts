@@ -86,6 +86,37 @@ export const actorsSlice = createSlice({
         edges: {},
       };
     },
+    changeActorNodeData: (
+      state,
+      action: PayloadAction<{
+        actorID: string;
+        nodeID: string;
+        value: string;
+        inputID: string;
+        type: NodeInputType;
+      }>
+    ) => {
+      const payload = action.payload;
+      state[payload.actorID].nodes[payload.nodeID].data[payload.type][payload.inputID] = {
+        ...state[payload.actorID].nodes[payload.nodeID].data[payload.type][payload.inputID],
+        value: payload.value
+      }
+    },
+    appendActorNodeInput: (
+      state,
+      action: PayloadAction<{
+        actorID: string;
+        nodeID: string;
+        type: NodeInputType;
+        input: NodeControlInput | NodeControlOutput;
+      }>
+    ) => {
+      const payload = action.payload;
+      state[payload.actorID].nodes[payload.nodeID].data[payload.type] = {
+        ...state[payload.actorID].nodes[payload.nodeID].data[payload.type],
+        [payload.input.id]: payload.input
+      };
+    },
   },
 });
 
@@ -96,6 +127,8 @@ export const {
   appendActorEdge,
   removeActorEdge,
   createActor,
+  changeActorNodeData,
+  appendActorNodeInput,
 } = actorsSlice.actions;
 
 export default actorsSlice.reducer;
