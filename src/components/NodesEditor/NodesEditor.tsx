@@ -15,6 +15,7 @@ export const NodesEditor = () => {
   const { area, areaID, nodeID } = useAppSelector(
     (state: RootState) => state.selected
   );
+
   const actor = useAppSelector((state) => {
     if (area === "pipeline") {
       const pipelines = objectToArray(state.pipelines);
@@ -48,7 +49,7 @@ export const NodesEditor = () => {
     if (area === 'pipeline') {
       dispatch(
         changePipelineNodeData({
-          piplineID: areaID,
+          pipelineID: areaID,
           nodeID: nodeID,
           inputID: id,
           value: e.target.value,
@@ -57,7 +58,7 @@ export const NodesEditor = () => {
       );
     } else {
       dispatch(
-        actor.changeActorNodeData({
+        changeActorNodeData({
           actorID: areaID,
           nodeID: nodeID,
           inputID: id,
