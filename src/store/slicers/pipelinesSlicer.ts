@@ -110,7 +110,7 @@ export const pipelinesSlice = createSlice({
       const payload = action.payload;
       state[payload.pipelineID].nodes[payload.nodeID].data[payload.type][payload.inputID] = {
         ...state[payload.pipelineID].nodes[payload.nodeID].data[payload.type][payload.inputID],
-        value: payload.value
+        code: payload.value
       }
     },
     appendPipelineNodeInput: (
