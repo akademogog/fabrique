@@ -9,41 +9,15 @@ import { RootState } from "@/store/store";
 import { objectToArray } from "@/helpers/mapping";
 import { appendPipelineNodeInput, changePipelineNodeData } from "@/store/slicers/pipelinesSlicer";
 import { appendActorNodeInput, changeActorNodeData } from "@/store/slicers/actorsSlicer";
+import { useNodeEditorData } from "@/hooks";
 
 export const NodesEditor = () => {
   const dispatch = useAppDispatch();
   const { area, areaID, nodeID } = useAppSelector(
     (state: RootState) => state.selected
   );
-
-  const actor = useAppSelector((state) => {
-    if (area === "pipeline") {
-      const pipelines = objectToArray(state.pipelines);
-      return pipelines.find((pipeline) => pipeline.id === areaID);
-    }
-    if (area === "actor") {
-      const actors = objectToArray(state.actors);
-      return actors.find((actors) => actors.id === areaID);
-    }
-  });
-  const selectedNode: Node | undefined = useMemo(() => {
-    if (actor) {
-      const nodes = objectToArray(actor.nodes);
-      return nodes.find((node) => node.id === nodeID);
-    }
-  }, [actor]);
-  const inputs: any = useMemo(() => {
-    if (selectedNode) {
-      const inputs = objectToArray(selectedNode.data.inputs);
-      return inputs;
-    }
-  }, [selectedNode]);
-  const outputs: any = useMemo(() => {
-    if (selectedNode) {
-      const outputs = objectToArray(selectedNode.data.outputs);
-      return outputs;
-    }
-  }, [selectedNode]);
+  
+  const {actor, selectedNode, inputs, outputs} = useNodeEditorData(area, areaID, nodeID);
 
   const onInputChange = (e: any, id: string, type: NodeInputType) => {
     if (area === 'pipeline') {
@@ -70,6 +44,7 @@ export const NodesEditor = () => {
     
   };
   const appendInput = (type: NodeInputType) => {
+    const params: any = {} 
     if (area === 'pipeline') {
       dispatch(
         appendPipelineNodeInput({
@@ -100,7 +75,6 @@ export const NodesEditor = () => {
       {actor && (
         <>
           <NodesEditorSection title="General">
-            <>
             <p>id: {selectedNode?.id}</p>
             <p>type: {selectedNode?.type}</p>
             <UIInput
@@ -110,7 +84,6 @@ export const NodesEditor = () => {
               onChange={setName}
             />
             <textarea name="description" cols={30} rows={2}></textarea>
-            </>
           </NodesEditorSection>
 
           <NodesEditorSection title="Inputs">
