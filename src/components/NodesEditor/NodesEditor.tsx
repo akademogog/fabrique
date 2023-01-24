@@ -57,7 +57,7 @@ export const NodesEditor = () => {
       );
     } else {
       dispatch(
-        changeActorNodeData({
+        actor.changeActorNodeData({
           actorID: areaID,
           nodeID: nodeID,
           inputID: id,
@@ -99,6 +99,7 @@ export const NodesEditor = () => {
       {actor && (
         <>
           <NodesEditorSection title="General">
+            <>
             <p>id: {selectedNode?.id}</p>
             <p>type: {selectedNode?.type}</p>
             <UIInput
@@ -108,6 +109,7 @@ export const NodesEditor = () => {
               onChange={setName}
             />
             <textarea name="description" cols={30} rows={2}></textarea>
+            </>
           </NodesEditorSection>
 
           <NodesEditorSection title="Inputs">

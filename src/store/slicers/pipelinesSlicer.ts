@@ -2,11 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { Node, NodeControlInput, NodeControlOutput, NodeInputType } from "@/types/node.types";
 import { Edge, Node as FlowNode } from "reactflow";
-import { edges, nodes } from "@/mockups/flowState";
 import { arrayToObject } from "@/helpers/mapping";
 import uuid from "react-uuid";
 import { Edges } from "@/types/global.types";
-
 interface InitialState {
   [id: string]: {
     id: string;
