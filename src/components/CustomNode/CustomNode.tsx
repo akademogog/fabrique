@@ -1,57 +1,68 @@
-import { objectToArray } from "@/helpers/mapping";
+import { defaultCustomNode } from "@/helpers/constants";
 import { NodeData } from "@/types/node.types";
-import { useMemo } from "react";
 import { Handle, Position } from "reactflow";
-import style from './CustomNode.module.scss';
+import style from "./CustomNode.module.scss";
 
-interface customNodeProps{
-  data: NodeData
-};
+interface customNodeProps {
+  data: NodeData;
+}
 
-const ConstantsNode: React.FC<customNodeProps> = ({ data }) => {
-  const inputs: any = useMemo(() => {
-    if (data) {
-      const inputs = objectToArray(data.inputs);
-      return inputs;
-    }
-  }, [data]);
-  const outputs: any = useMemo(() => {
-    if (data) {
-      const outputs = objectToArray(data.outputs);
-      return outputs;
-    }
-  }, [data]);
-
+const ConstantsNode: React.FC<customNodeProps> = ({ data }) => {  
   return (
     <>
       <div className={`${style.customNode}`}>
-        <p className={`${style.customNodeLabel}`}>{data.label}</p>
+        <p className={`${style.customNodeLabel}`}>{data.name}</p>
 
-        {outputs.map((e) => (
-          <div className={`${style.rightHandle}`} key={e.id}>
-            <span className={`${style.handleText}`}>{e.value}</span>
-            <Handle
-              id={e.id}
-              className={`${style.handleCircle}`}
-              style={{backgroundColor: e.color || 'white'}}
-              type="source"
-              position={Position.Right}
-            />
+        {data.type_ && defaultCustomNode[data.type_].output_groups.map((group, index) => (
+          <div className={`${style.outputsGroup}`} key={group.id_}>
+            {              
+              group.group_title && (
+                <span className={`${style.outputsGroupLabel}`}>
+                  {group.group_title}
+                </span>
+              )
+            }
+
+            {data.g_ports_out && data.g_ports_out[index].map((port) => (
+              <div className={`${style.rightHandle}`} key={port.id_}>
+                <span className={`${style.handleText}`}>{port.code}</span>
+                <Handle
+                  id={port.id_}
+                  className={`${style.handleCircle}`}
+                  style={{ backgroundColor: "white" }}
+                  type="source"
+                  position={Position.Right}
+                />
+              </div>
+            ))}
           </div>
         ))}
-        
-        {inputs.map((e) => (
-          <div className={`${style.leftHandle}`} key={e.id}>
-            <Handle
-              id={e.id}
-              className={`${style.handleCircle}`}
-              type="target"
-              position={Position.Left}
-            />
-            <span className={`${style.handleText}`}>{e.value}</span>
+
+        {data.type_ && defaultCustomNode[data.type_].input_groups.map((group, index) => (
+          <div className={`${style.outputsGroup}`} key={group.id_}>
+            {              
+              group.group_title && (
+                <span className={`${style.outputsGroupLabel}`}>
+                  {group.group_title}
+                </span>
+              )
+            }
+
+            {data.g_ports_in && data.g_ports_in[index].map((port) => (
+              <div className={`${style.leftHandle}`} key={port.id_}>
+                <Handle
+                  id={port.id_}
+                  className={`${style.handleCircle}`}
+                  type="target"
+                  position={Position.Left}
+                />
+                <span className={`${style.handleText}`}>{port.code}</span>
+              </div>
+            ))}
           </div>
         ))}
       </div>
+      <p>{data.description}</p>
     </>
   );
 };
