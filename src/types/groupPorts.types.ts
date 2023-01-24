@@ -1,4 +1,4 @@
-export interface groupPorts {
+export interface groupPort {
   id_: string,
   show_ports: boolean,
   can_add: boolean, 
@@ -17,4 +17,14 @@ export interface groupPorts {
   node_updater_callback_name?: string,
   code_validator_callback_name?: string,
   valid_types: string[],
+}
+
+export type groupPorts = {
+  input_groups: groupPort[];
+  output_groups: groupPort[];
+  ui_config_schema: string;
+}
+
+export type customNode = {
+  [name: string]: groupPorts;
 }
