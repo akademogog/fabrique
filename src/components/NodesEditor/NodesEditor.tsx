@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import uuid from "react-uuid";
 import style from "./NodesEditor.module.scss";
-import { NodeInputType, Node, portData } from "@/types/node.types";
+import { NodeInputType, Node, portData, portDatas } from "@/types/node.types";
 import { NodesEditorSection } from "./components/NodesEditorSection";
 import { UIIButton, UIInput, UISelect } from "../UI";
 import { RootState } from "@/store/store";
@@ -74,33 +74,29 @@ export const NodesEditor = () => {
     if (area === "pipeline") {
       dispatch(changePipelineDescriptionValue(payload));
     } else {
-      dispatch(
-        changeActorDescriptionValue(payload)
-      );
+      dispatch(changeActorDescriptionValue(payload));
     }
   };
   const appendInput = (type: NodeInputType) => {
     const payload = {
       areaID,
-          nodeID: nodeID,
-          type,
-          input: { code: '',
-            id_: uuid(),
-            name: '',
-            required: false,
-            schema_: '',
-            special: false,
-            type_: 'boolean',
-            visible: true, },
+      nodeID: nodeID,
+      type,
+      input: {
+        code: "",
+        id_: uuid(),
+        name: "",
+        required: false,
+        schema_: "",
+        special: false,
+        type_: "boolean",
+        visible: true,
+      },
     };
     if (area === "pipeline") {
-      dispatch(
-        appendPipelineNodeInput(payload)
-      );
+      dispatch(appendPipelineNodeInput(payload));
     } else {
-      dispatch(
-        appendActorNodeInput(payload)
-      );
+      dispatch(appendActorNodeInput(payload));
     }
   };
 
@@ -134,22 +130,34 @@ export const NodesEditor = () => {
             }
           >
             {selectedNode &&
-              inputs.map((input: portData) => (
-                <div key={input.id_} className={style.nodesEditorInputBlock}>
-                  <UIInput
-                    placeholder="name"
-                    value={input.code}
-                    onChange={(e) => onInputChange(e, input.id_, "g_ports_in")}
-                  />
-                  <UISelect
-                    name="type"
-                    options={[
-                      { value: "number", title: "Number" },
-                      { value: "string", title: "String" },
-                      { value: "integer", title: "integer" },
-                    ]}
-                  />
-                </div>
+              inputs.map((inputGroup: portDatas, i: number) => (
+                <ul>
+                  <span>input_group: {i}</span>
+                  {inputGroup.map((input: portData) => (
+                    <li>
+                      <div
+                        key={input.id_}
+                        className={style.nodesEditorInputBlock}
+                      >
+                        <UIInput
+                          placeholder="name"
+                          value={input.code}
+                          onChange={(e) =>
+                            onInputChange(e, input.code, "g_ports_in")
+                          }
+                        />
+                        <UISelect
+                          name="type"
+                          options={[
+                            { value: "number", title: "Number" },
+                            { value: "string", title: "String" },
+                            { value: "integer", title: "integer" },
+                          ]}
+                        />
+                      </div>
+                    </li>
+                  ))}
+                </ul>
               ))}
           </NodesEditorSection>
           <NodesEditorSection
@@ -162,24 +170,34 @@ export const NodesEditor = () => {
             }
           >
             {selectedNode &&
-              outputs.map((input: portData) => (
-                <div key={input.id_} className={style.nodesEditorInputBlock}>
-                  <UIInput
-                    placeholder="name"
-                    value={input.code}
-                    onChange={(e) =>
-                      onInputChange(e, input.code, "g_ports_out")
-                    }
-                  />
-                  <UISelect
-                    name="type"
-                    options={[
-                      { value: "number", title: "Number" },
-                      { value: "string", title: "String" },
-                      { value: "integer", title: "integer" },
-                    ]}
-                  />
-                </div>
+              outputs.map((inputGroup: portDatas, i: number) => (
+                <ul>
+                  <span>input_group: {i}</span>
+                  {inputGroup.map((input: portData) => (
+                    <li>
+                      <div
+                        key={input.id_}
+                        className={style.nodesEditorInputBlock}
+                      >
+                        <UIInput
+                          placeholder="name"
+                          value={input.code}
+                          onChange={(e) =>
+                            onInputChange(e, input.code, "g_ports_out")
+                          }
+                        />
+                        <UISelect
+                          name="type"
+                          options={[
+                            { value: "number", title: "Number" },
+                            { value: "string", title: "String" },
+                            { value: "integer", title: "integer" },
+                          ]}
+                        />
+                      </div>
+                    </li>
+                  ))}
+                </ul>
               ))}
           </NodesEditorSection>
         </>
