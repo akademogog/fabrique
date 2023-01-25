@@ -29,8 +29,14 @@
     }
   }
 
-  &InputBlock {
-    display: flex;
-    justify-content: space-between;
+  &Input {
+    &Group {
+      list-style: none;
+      margin-bottom: 10px;
+    }
+    &Block {
+      display: flex;
+      justify-content: space-between;
+    }
   }
 }

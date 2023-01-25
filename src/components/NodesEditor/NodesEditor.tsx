@@ -131,19 +131,18 @@ export const NodesEditor = () => {
           >
             {selectedNode &&
               inputs.map((inputGroup: portDatas, i: number) => (
-                <ul>
+                <ul className={style.nodesEditorInputGroup} key={'inputGroup' + i}>
                   <span>input_group: {i}</span>
                   {inputGroup.map((input: portData) => (
-                    <li>
+                    <li key={uuid()}>
                       <div
-                        key={input.id_}
                         className={style.nodesEditorInputBlock}
                       >
                         <UIInput
                           placeholder="name"
-                          value={input.code}
+                          value={input.name}
                           onChange={(e) =>
-                            onInputChange(e, input.code, "g_ports_in")
+                            onInputChange(e, input.id_, "g_ports_in")
                           }
                         />
                         <UISelect
@@ -161,7 +160,7 @@ export const NodesEditor = () => {
               ))}
           </NodesEditorSection>
           <NodesEditorSection
-            title="Inputs"
+            title="Outputs"
             control={
               <UIIButton
                 variant="plus"
@@ -171,19 +170,18 @@ export const NodesEditor = () => {
           >
             {selectedNode &&
               outputs.map((inputGroup: portDatas, i: number) => (
-                <ul>
+                <ul className={style.nodesEditorInputGroup} key={uuid()}>
                   <span>input_group: {i}</span>
                   {inputGroup.map((input: portData) => (
-                    <li>
+                    <li key={input.id_}>
                       <div
-                        key={input.id_}
                         className={style.nodesEditorInputBlock}
                       >
                         <UIInput
                           placeholder="name"
-                          value={input.code}
+                          value={input.name}
                           onChange={(e) =>
-                            onInputChange(e, input.code, "g_ports_out")
+                            onInputChange(e, input.id_, "g_ports_out")
                           }
                         />
                         <UISelect

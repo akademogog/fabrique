@@ -1,6 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { Node, NodeControlInput, NodeControlOutput, NodeInputType, portData } from "@/types/node.types";
+import {
+  Node,
+  NodeControlInput,
+  NodeControlOutput,
+  NodeInputType,
+  portData,
+} from "@/types/node.types";
 import { Edge, Node as FlowNode } from "reactflow";
 import { arrayToObject } from "@/helpers/mapping";
 import uuid from "react-uuid";
@@ -87,9 +93,7 @@ export const pipelinesSlice = createSlice({
         delete state[payload.pipelineID].edges[payload.edgeId];
       }
     },
-    createPipeline: (
-      state
-    ) => {
+    createPipeline: (state) => {
       const id = uuid();
       state[id] = {
         id: id,
@@ -117,10 +121,12 @@ export const pipelinesSlice = createSlice({
       }>
     ) => {
       const payload = action.payload;
-      state[payload.areaID].nodes[payload.nodeID].data[payload.type][payload.inputID] = {
-        ...state[payload.areaID].nodes[payload.nodeID].data[payload.type][payload.inputID],
-        code: payload.value
-      }
+      // state[payload.areaID].nodes[payload.nodeID].data[payload.type][0][0] = {
+      //   ...state[payload.areaID].nodes[payload.nodeID].data[payload.type][
+      //     payload.inputID
+      //   ],
+      //   name: payload.value,
+      // };
     },
     changePipelineDescriptionValue: (
       state,
@@ -133,8 +139,8 @@ export const pipelinesSlice = createSlice({
       const payload = action.payload;
       state[payload.areaID].nodes[payload.nodeID].data = {
         ...state[payload.areaID].nodes[payload.nodeID].data,
-        description: payload.value
-      }
+        description: payload.value,
+      };
     },
     changePipelineNameValue: (
       state,
@@ -147,8 +153,8 @@ export const pipelinesSlice = createSlice({
       const payload = action.payload;
       state[payload.areaID].nodes[payload.nodeID].data = {
         ...state[payload.areaID].nodes[payload.nodeID].data,
-        name: payload.value
-      }
+        name: payload.value,
+      };
     },
     appendPipelineNodeInput: (
       state,
@@ -160,10 +166,12 @@ export const pipelinesSlice = createSlice({
       }>
     ) => {
       const payload = action.payload;
-      console.log(state[payload.areaID].nodes[payload.nodeID].data[payload.type])
-      state[payload.areaID].nodes[payload.nodeID].data[payload.type][0].push({
-        [payload.input.id_]: payload.input
-      });
+      console.log(
+        state[payload.areaID].nodes[payload.nodeID].data[payload.type]
+      );
+      state[payload.areaID].nodes[payload.nodeID].data[payload.type][0].push(
+        payload.input
+      );
     },
   },
 });
