@@ -135,15 +135,15 @@ export const actorsSlice = createSlice({
         areaID: string;
         nodeID: string;
         value: string;
-        inputID: string;
+        index: number;
         type: NodeInputType;
       }>
     ) => {
-        // const payload = action.payload;
-        // state[payload.areaID].nodes[payload.nodeID].data[payload.type][0][0] = {
-        //  ...state[payload.areaID].nodes[payload.nodeID].data[payload.type][0][0],
-        //   name: payload.value
-        // }
+         const payload = action.payload;
+         state[payload.areaID].nodes[payload.nodeID].data[payload.type][0][payload.index] = {
+          ...state[payload.areaID].nodes[payload.nodeID].data[payload.type][0][payload.index],
+           name: payload.value
+         }
     },
     appendActorNodeInput: (
       state,
@@ -155,9 +155,6 @@ export const actorsSlice = createSlice({
       }>
     ) => {
       const payload = action.payload;
-      console.log(
-        state[payload.areaID].nodes[payload.nodeID].data[payload.type]
-      );
       state[payload.areaID].nodes[payload.nodeID].data[payload.type][0].push(
         payload.input
       );

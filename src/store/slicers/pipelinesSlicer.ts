@@ -116,17 +116,15 @@ export const pipelinesSlice = createSlice({
         areaID: string;
         nodeID: string;
         value: string;
-        inputID: string;
+        index: number;
         type: NodeInputType;
       }>
     ) => {
       const payload = action.payload;
-      // state[payload.areaID].nodes[payload.nodeID].data[payload.type][0][0] = {
-      //   ...state[payload.areaID].nodes[payload.nodeID].data[payload.type][
-      //     payload.inputID
-      //   ],
-      //   name: payload.value,
-      // };
+      state[payload.areaID].nodes[payload.nodeID].data[payload.type][0][payload.index] = {
+         ...state[payload.areaID].nodes[payload.nodeID].data[payload.type][0][payload.index],
+         name: payload.value,
+      };
     },
     changePipelineDescriptionValue: (
       state,

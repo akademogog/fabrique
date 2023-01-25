@@ -19,6 +19,7 @@ import {
 } from "@/store/slicers/actorsSlicer";
 import { useNodeEditorData } from "@/hooks";
 import { NodesEditorInfo } from "./components/NodesEditorInfo";
+import cn from 'classnames';
 
 export const NodesEditor = () => {
   const dispatch = useAppDispatch();
@@ -32,11 +33,11 @@ export const NodesEditor = () => {
     nodeID
   );
 
-  const onInputChange = (e: any, id: string, type: NodeInputType) => {
+  const onInputChange = (e: any, indx: number, type: NodeInputType) => {
     const payload = {
       areaID: areaID,
       nodeID: nodeID,
-      inputID: id,
+      index: indx,
       value: e.target.value,
       type,
     };
@@ -133,16 +134,17 @@ export const NodesEditor = () => {
               inputs.map((inputGroup: portDatas, i: number) => (
                 <ul className={style.nodesEditorInputGroup} key={'inputGroup' + i}>
                   <span>input_group: {i}</span>
-                  {inputGroup.map((input: portData) => (
+                  {inputGroup.map((input: portData, indx) => (
                     <li key={uuid()}>
                       <div
                         className={style.nodesEditorInputBlock}
                       >
                         <UIInput
+                          isDisabled={i === 1}
                           placeholder="name"
                           value={input.name}
                           onChange={(e) =>
-                            onInputChange(e, input.id_, "g_ports_in")
+                            onInputChange(e, indx, "g_ports_in")
                           }
                         />
                         <UISelect
@@ -172,16 +174,17 @@ export const NodesEditor = () => {
               outputs.map((inputGroup: portDatas, i: number) => (
                 <ul className={style.nodesEditorInputGroup} key={uuid()}>
                   <span>input_group: {i}</span>
-                  {inputGroup.map((input: portData) => (
+                  {inputGroup.map((input: portData, indx) => (
                     <li key={input.id_}>
                       <div
                         className={style.nodesEditorInputBlock}
                       >
                         <UIInput
+                          isDisabled={i === 1}
                           placeholder="name"
                           value={input.name}
                           onChange={(e) =>
-                            onInputChange(e, input.id_, "g_ports_out")
+                            onInputChange(e, indx, "g_ports_out")
                           }
                         />
                         <UISelect
