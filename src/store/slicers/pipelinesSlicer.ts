@@ -97,6 +97,21 @@ export const pipelinesSlice = createSlice({
         edges: {},
       };
     },
+    setPipelineState: (
+      state,
+      action: PayloadAction<{
+        pipelineID: string;
+        pipeline: {
+          id: string;
+          nodes: Node;
+          edges: Edges;
+        };
+      }>
+    ) => {
+      const payload = action.payload;
+      state[payload.pipelineID].nodes = payload.pipeline.nodes;
+      state[payload.pipelineID].edges = payload.pipeline.edges;
+    },
     removePipeline: (
       state,
       action: PayloadAction<{
@@ -147,6 +162,7 @@ export const {
   appendPipelineEdge,
   removePipelineEdge,
   createPipeline,
+  setPipelineState,
   removePipeline,
   changePipelineNodeData,
   appendPipelineNodeInput,

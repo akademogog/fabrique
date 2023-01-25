@@ -1,8 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { Actor } from "@/types/actor.types";
-import { Edge } from "reactflow";
-import { Node } from "@/types/node.types";
+import { Edge, Node as FlowNode } from "reactflow";
 import { arrayToObject } from "@/helpers/mapping";
 import { NodeControlInput, NodeControlOutput, NodeInputType } from "@/types/node.types";
 
@@ -20,7 +19,7 @@ export const actorsSlice = createSlice({
       state,
       action: PayloadAction<{
         actorID: string;
-        nodes: Node[];
+        nodes: FlowNode[];
       }>
     ) => {
       const payload = action.payload;
@@ -62,7 +61,6 @@ export const actorsSlice = createSlice({
       }>
     ) => {
       const payload = action.payload;
-      console.log(payload);
       state[payload.actorID].edges[payload.edge.id] = payload.edge;
     },
     removeActorEdge: (
@@ -87,6 +85,29 @@ export const actorsSlice = createSlice({
         nodes: {},
         edges: {},
       };
+    },
+    setActorState: (
+      state,
+      action: PayloadAction<{
+        actorID: string;
+        actor: Actor;
+      }>
+    ) => {
+      const payload = action.payload;
+      state[payload.actorID].nodes = payload.actor.nodes;
+      state[payload.actorID].edges = payload.actor.edges;
+    },
+    setProjectActors: (
+      state,
+      action: PayloadAction<{
+        actors: InitialState;
+      }>
+    ) => {
+      const payload = action.payload;
+      const actors = payload.actors;
+      for (const key in actors) {
+        state[key] = actors[key];
+      }
     },
     removeActor: (
       state,
@@ -138,7 +159,9 @@ export const {
   appendActorEdge,
   removeActorEdge,
   createActor,
+  setProjectActors,
   removeActor,
+  setActorState,
   changeActorNodeData,
   appendActorNodeInput,
 } = actorsSlice.actions;

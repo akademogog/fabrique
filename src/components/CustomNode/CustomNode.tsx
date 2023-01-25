@@ -7,7 +7,7 @@ import { RootState } from "@/store/store";
 import { customNode } from "@/types/groupPorts.types";
 import { NodeData } from "@/types/node.types";
 import { useMemo } from "react";
-import { Handle, Position } from "reactflow";
+import { Handle, Position, useOnSelectionChange } from "reactflow";
 import style from "./CustomNode.module.scss";
 
 interface customNodeProps {

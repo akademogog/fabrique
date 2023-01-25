@@ -27,6 +27,11 @@
   color: white;
   padding: 5px 10px;
   cursor: pointer;
+  text-decoration: none;
+
+  input {
+    display: none;
+  }
 
   &:hover {
     background: rgba(143,153,168,.15);
