@@ -5,8 +5,14 @@ import { NodeInputType, Node, portData } from "@/types/node.types";
 import { NodesEditorSection } from "./components/NodesEditorSection";
 import { UIIButton, UIInput, UISelect } from "../UI";
 import { RootState } from "@/store/store";
-import { appendPipelineNodeInput, changePipelineNodeData } from "@/store/slicers/pipelinesSlicer";
-import { appendActorNodeInput, changeActorNodeData } from "@/store/slicers/actorsSlicer";
+import {
+  appendPipelineNodeInput,
+  changePipelineNodeData,
+} from "@/store/slicers/pipelinesSlicer";
+import {
+  appendActorNodeInput,
+  changeActorNodeData,
+} from "@/store/slicers/actorsSlicer";
 import { useNodeEditorData } from "@/hooks";
 import { NodesEditorInfo } from "./components/NodesEditorInfo";
 
@@ -15,11 +21,15 @@ export const NodesEditor = () => {
   const { area, areaID, nodeID } = useAppSelector(
     (state: RootState) => state.selected
   );
-  
-  const {actor, selectedNode, inputs, outputs} = useNodeEditorData(area, areaID, nodeID);
+
+  const { actor, selectedNode, inputs, outputs } = useNodeEditorData(
+    area,
+    areaID,
+    nodeID
+  );
 
   const onInputChange = (e: any, id: string, type: NodeInputType) => {
-    if (area === 'pipeline') {
+    if (area === "pipeline") {
       dispatch(
         changePipelineNodeData({
           pipelineID: areaID,
@@ -40,11 +50,10 @@ export const NodesEditor = () => {
         })
       );
     }
-    
   };
   const appendInput = (type: NodeInputType) => {
-    const params: any = {} 
-    if (area === 'pipeline') {
+    const params: any = {};
+    if (area === "pipeline") {
       dispatch(
         appendPipelineNodeInput({
           piplineID: areaID,
@@ -74,7 +83,7 @@ export const NodesEditor = () => {
       {actor && selectedNode && (
         <>
           <NodesEditorSection title="General">
-            <NodesEditorInfo id={nodeID} type={selectedNode.data.type_}/>
+            <NodesEditorInfo id={nodeID} type={selectedNode.data.type_} />
             <UIInput
               placeholder="name"
               label="name"
@@ -84,10 +93,15 @@ export const NodesEditor = () => {
             <textarea name="description" cols={30} rows={2}></textarea>
           </NodesEditorSection>
 
-          <NodesEditorSection title="Inputs">
-            <UIIButton variant="green" onClick={() => appendInput("g_ports_in")}>
-              append
-            </UIIButton>
+          <NodesEditorSection
+            title="Inputs"
+            control={
+              <UIIButton
+                variant="plus"
+                onClick={() => appendInput("g_ports_in")}
+              />
+            }
+          >
             {selectedNode &&
               inputs.map((input: portData) => (
                 <div key={input.id_} className={style.nodesEditorInputBlock}>
@@ -107,17 +121,24 @@ export const NodesEditor = () => {
                 </div>
               ))}
           </NodesEditorSection>
-          <NodesEditorSection title="Outputs">
-            <UIIButton variant="green" onClick={() => appendInput("g_ports_out")}>
-              append
-            </UIIButton>
+          <NodesEditorSection
+            title="Inputs"
+            control={
+              <UIIButton
+                variant="plus"
+                onClick={() => appendInput("g_ports_out")}
+              />
+            }
+          >
             {selectedNode &&
               outputs.map((input: portData) => (
                 <div key={input.id_} className={style.nodesEditorInputBlock}>
                   <UIInput
                     placeholder="name"
                     value={input.code}
-                    onChange={(e) => onInputChange(e, input.code, "g_ports_out")}
+                    onChange={(e) =>
+                      onInputChange(e, input.code, "g_ports_out")
+                    }
                   />
                   <UISelect
                     name="type"
