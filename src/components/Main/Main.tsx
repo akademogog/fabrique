@@ -5,6 +5,7 @@ import { RootState } from "@/store/store";
 import { changeCurrentPage } from "@/store/slicers/routeSlicer";
 import FlowPage from "@/pages/FlowPage";
 import { useEffect } from "react";
+import { changeSelectedNode } from "@/store/slicers/selectedSlicer";
 
 const Main = () => {
   const dispatch = useAppDispatch();
@@ -18,9 +19,16 @@ const Main = () => {
           actorID: route.params.actorID ? route.params.actorID : "",
         })
       );
+      dispatch(
+        changeSelectedNode({
+          area: "",
+          areaID: "",
+          nodeID: "",
+        })
+      );
     }
   }, [route]);
-  const { name } = useAppSelector((state: RootState) => state.route);
+  const { name } = useAppSelector((state: RootState) => state.route);  
 
   if (name === "projects" || name === "actor") {
     return <FlowPage />;

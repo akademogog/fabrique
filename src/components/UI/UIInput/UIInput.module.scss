@@ -3,6 +3,14 @@
     display: flex;
     border: 1px solid rgb(41, 41, 41);
 
+    &Disabled {
+        pointer-events: none;
+        border: 1px solid rgb(214, 214, 214);
+        input { 
+            color: rgb(214, 214, 214);
+        }
+    }
+
     &Label {
         background-color: rgb(214, 214, 214);
         padding: 4px;

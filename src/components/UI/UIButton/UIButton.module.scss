@@ -12,3 +12,18 @@
     color: #fff;
     font-size: 16px;
 }
+
+.button.plus{ 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    width: 20px;
+    height: 20;
+    font-size: 16px;
+
+    img {
+        width: 20px;
+        height: 20px;
+    }
+}

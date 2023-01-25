@@ -1,6 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { Node, NodeControlInput, NodeControlOutput, NodeInputType } from "@/types/node.types";
+import {
+  Node,
+  NodeControlInput,
+  NodeControlOutput,
+  NodeInputType,
+  portData,
+} from "@/types/node.types";
 import { Edge, Node as FlowNode } from "reactflow";
 import { arrayToObject } from "@/helpers/mapping";
 import uuid from "react-uuid";
@@ -87,15 +93,28 @@ export const pipelinesSlice = createSlice({
         delete state[payload.pipelineID].edges[payload.edgeId];
       }
     },
-    createPipeline: (
-      state
-    ) => {
+    createPipeline: (state) => {
       const id = uuid();
       state[id] = {
         id: id,
         nodes: {},
         edges: {},
       };
+    },
+    setPipelineState: (
+      state,
+      action: PayloadAction<{
+        pipelineID: string;
+        pipeline: {
+          id: string;
+          nodes: Node;
+          edges: Edges;
+        };
+      }>
+    ) => {
+      const payload = action.payload;
+      state[payload.pipelineID].nodes = payload.pipeline.nodes;
+      state[payload.pipelineID].edges = payload.pipeline.edges;
     },
     removePipeline: (
       state,
@@ -106,36 +125,66 @@ export const pipelinesSlice = createSlice({
       const payload = action.payload;
       delete state[payload.pipelineID];
     },
-    changePipelineNodeData: (
+    changePipelineInputData: (
       state,
       action: PayloadAction<{
-        pipelineID: string;
+        areaID: string;
         nodeID: string;
         value: string;
-        inputID: string;
+        index: number;
         type: NodeInputType;
       }>
     ) => {
       const payload = action.payload;
-      state[payload.pipelineID].nodes[payload.nodeID].data[payload.type][payload.inputID] = {
-        ...state[payload.pipelineID].nodes[payload.nodeID].data[payload.type][payload.inputID],
-        code: payload.value
-      }
+      state[payload.areaID].nodes[payload.nodeID].data[payload.type][0][payload.index] = {
+         ...state[payload.areaID].nodes[payload.nodeID].data[payload.type][0][payload.index],
+         name: payload.value,
+      };
+    },
+    changePipelineDescriptionValue: (
+      state,
+      action: PayloadAction<{
+        areaID: string;
+        nodeID: string;
+        value: string;
+      }>
+    ) => {
+      const payload = action.payload;
+      state[payload.areaID].nodes[payload.nodeID].data = {
+        ...state[payload.areaID].nodes[payload.nodeID].data,
+        description: payload.value,
+      };
+    },
+    changePipelineNameValue: (
+      state,
+      action: PayloadAction<{
+        areaID: string;
+        nodeID: string;
+        value: string;
+      }>
+    ) => {
+      const payload = action.payload;
+      state[payload.areaID].nodes[payload.nodeID].data = {
+        ...state[payload.areaID].nodes[payload.nodeID].data,
+        name: payload.value,
+      };
     },
     appendPipelineNodeInput: (
       state,
       action: PayloadAction<{
-        piplineID: string;
+        areaID: string;
         nodeID: string;
         type: NodeInputType;
-        input: NodeControlInput | NodeControlOutput;
+        input: portData;
       }>
     ) => {
       const payload = action.payload;
-      state[payload.piplineID].nodes[payload.nodeID].data[payload.type] = {
-        ...state[payload.piplineID].nodes[payload.nodeID].data[payload.type],
-        [payload.input.id]: payload.input
-      };
+      console.log(
+        state[payload.areaID].nodes[payload.nodeID].data[payload.type]
+      );
+      state[payload.areaID].nodes[payload.nodeID].data[payload.type][0].push(
+        payload.input
+      );
     },
   },
 });
@@ -147,8 +196,11 @@ export const {
   appendPipelineEdge,
   removePipelineEdge,
   createPipeline,
+  setPipelineState,
   removePipeline,
-  changePipelineNodeData,
+  changePipelineDescriptionValue,
+  changePipelineInputData,
+  changePipelineNameValue,
   appendPipelineNodeInput,
 } = pipelinesSlice.actions;
 

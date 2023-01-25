@@ -19,6 +19,7 @@ import storage from "redux-persist/lib/storage";
 const rootPersistConfig = {
   key: "root",
   storage: storage,
+  blacklist: ['selected', 'route'],
 };
 const rootReducer = combineReducers({
   pipelines: pipelinesReducer,
