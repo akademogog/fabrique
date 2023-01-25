@@ -7,11 +7,15 @@ import { UIIButton, UIInput, UISelect } from "../UI";
 import { RootState } from "@/store/store";
 import {
   appendPipelineNodeInput,
-  changePipelineNodeData,
+  changePipelineDescriptionValue,
+  changePipelineInputData,
+  changePipelineNameValue,
 } from "@/store/slicers/pipelinesSlicer";
 import {
   appendActorNodeInput,
-  changeActorNodeData,
+  changeActorDescriptionValue,
+  changeActorInputData,
+  changeActorNameValue,
 } from "@/store/slicers/actorsSlicer";
 import { useNodeEditorData } from "@/hooks";
 import { NodesEditorInfo } from "./components/NodesEditorInfo";
@@ -29,53 +33,75 @@ export const NodesEditor = () => {
   );
 
   const onInputChange = (e: any, id: string, type: NodeInputType) => {
+    const payload = {
+      areaID: areaID,
+      nodeID: nodeID,
+      inputID: id,
+      value: e.target.value,
+      type,
+    };
+    if (area === "pipeline") {
+      dispatch(changePipelineInputData(payload));
+    } else {
+      dispatch(changeActorInputData(payload));
+    }
+  };
+  const onNameChange = (e: any) => {
     if (area === "pipeline") {
       dispatch(
-        changePipelineNodeData({
-          pipelineID: areaID,
+        changePipelineNameValue({
+          areaID,
           nodeID: nodeID,
-          inputID: id,
           value: e.target.value,
-          type,
         })
       );
     } else {
       dispatch(
-        changeActorNodeData({
-          actorID: areaID,
+        changeActorNameValue({
+          areaID,
           nodeID: nodeID,
-          inputID: id,
           value: e.target.value,
-          type,
         })
+      );
+    }
+  };
+  const onDescriptionChange = (e: any) => {
+    const payload = {
+      areaID,
+      nodeID: nodeID,
+      value: e.target.value,
+    };
+    if (area === "pipeline") {
+      dispatch(changePipelineDescriptionValue(payload));
+    } else {
+      dispatch(
+        changeActorDescriptionValue(payload)
       );
     }
   };
   const appendInput = (type: NodeInputType) => {
-    const params: any = {};
-    if (area === "pipeline") {
-      dispatch(
-        appendPipelineNodeInput({
-          piplineID: areaID,
+    const payload = {
+      areaID,
           nodeID: nodeID,
           type,
-          input: { id: uuid(), type: "float", value: "" },
-        })
+          input: { code: '',
+            id_: uuid(),
+            name: '',
+            required: false,
+            schema_: '',
+            special: false,
+            type_: 'boolean',
+            visible: true, },
+    };
+    if (area === "pipeline") {
+      dispatch(
+        appendPipelineNodeInput(payload)
       );
     } else {
       dispatch(
-        appendActorNodeInput({
-          actorID: areaID,
-          nodeID: nodeID,
-          type,
-          input: { id: uuid(), type: "float", value: "" },
-        })
+        appendActorNodeInput(payload)
       );
     }
-  };
-
-  const setName = (e: any) => {
-    return e;
   };
 
   return (
@@ -88,9 +114,14 @@ export const NodesEditor = () => {
               placeholder="name"
               label="name"
               value={selectedNode?.data.name}
-              onChange={setName}
+              onChange={(e) => onNameChange(e)}
             />
-            <textarea name="description" cols={30} rows={2}></textarea>
+            <textarea
+              onChange={(e) => onDescriptionChange(e)}
+              name="description"
+              cols={30}
+              rows={2}
+            ></textarea>
           </NodesEditorSection>
 
           <NodesEditorSection

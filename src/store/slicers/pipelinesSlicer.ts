@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { Node, NodeControlInput, NodeControlOutput, NodeInputType } from "@/types/node.types";
+import { Node, NodeControlInput, NodeControlOutput, NodeInputType, portData } from "@/types/node.types";
 import { Edge, Node as FlowNode } from "reactflow";
 import { arrayToObject } from "@/helpers/mapping";
 import uuid from "react-uuid";
@@ -106,10 +106,10 @@ export const pipelinesSlice = createSlice({
       const payload = action.payload;
       delete state[payload.pipelineID];
     },
-    changePipelineNodeData: (
+    changePipelineInputData: (
       state,
       action: PayloadAction<{
-        pipelineID: string;
+        areaID: string;
         nodeID: string;
         value: string;
         inputID: string;
@@ -117,25 +117,53 @@ export const pipelinesSlice = createSlice({
       }>
     ) => {
       const payload = action.payload;
-      state[payload.pipelineID].nodes[payload.nodeID].data[payload.type][payload.inputID] = {
-        ...state[payload.pipelineID].nodes[payload.nodeID].data[payload.type][payload.inputID],
+      state[payload.areaID].nodes[payload.nodeID].data[payload.type][payload.inputID] = {
+        ...state[payload.areaID].nodes[payload.nodeID].data[payload.type][payload.inputID],
         code: payload.value
+      }
+    },
+    changePipelineDescriptionValue: (
+      state,
+      action: PayloadAction<{
+        areaID: string;
+        nodeID: string;
+        value: string;
+      }>
+    ) => {
+      const payload = action.payload;
+      state[payload.areaID].nodes[payload.nodeID].data = {
+        ...state[payload.areaID].nodes[payload.nodeID].data,
+        description: payload.value
+      }
+    },
+    changePipelineNameValue: (
+      state,
+      action: PayloadAction<{
+        areaID: string;
+        nodeID: string;
+        value: string;
+      }>
+    ) => {
+      const payload = action.payload;
+      state[payload.areaID].nodes[payload.nodeID].data = {
+        ...state[payload.areaID].nodes[payload.nodeID].data,
+        name: payload.value
       }
     },
     appendPipelineNodeInput: (
       state,
       action: PayloadAction<{
-        piplineID: string;
+        areaID: string;
         nodeID: string;
         type: NodeInputType;
-        input: NodeControlInput | NodeControlOutput;
+        input: portData;
       }>
     ) => {
       const payload = action.payload;
-      state[payload.piplineID].nodes[payload.nodeID].data[payload.type] = {
-        ...state[payload.piplineID].nodes[payload.nodeID].data[payload.type],
-        [payload.input.id]: payload.input
-      };
+      console.log(state[payload.areaID].nodes[payload.nodeID].data[payload.type])
+      state[payload.areaID].nodes[payload.nodeID].data[payload.type][0].push({
+        [payload.input.id_]: payload.input
+      });
     },
   },
 });
@@ -148,7 +176,9 @@ export const {
   removePipelineEdge,
   createPipeline,
   removePipeline,
-  changePipelineNodeData,
+  changePipelineDescriptionValue,
+  changePipelineInputData,
+  changePipelineNameValue,
   appendPipelineNodeInput,
 } = pipelinesSlice.actions;
 

@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { Actor } from "@/types/actor.types";
 import { Edge } from "reactflow";
-import { Node } from "@/types/node.types";
+import { Node, portData } from "@/types/node.types";
 import { arrayToObject } from "@/helpers/mapping";
 import { NodeControlInput, NodeControlOutput, NodeInputType } from "@/types/node.types";
 
@@ -97,10 +97,38 @@ export const actorsSlice = createSlice({
       const payload = action.payload;
       delete state[payload.actorID];
     },
-    changeActorNodeData: (
+    changeActorNameValue: (
       state,
       action: PayloadAction<{
-        actorID: string;
+        areaID: string;
+        nodeID: string;
+        value: string;
+      }>
+    ) => {
+      const payload = action.payload;
+      state[payload.areaID].nodes[payload.nodeID].data = {
+        ...state[payload.areaID].nodes[payload.nodeID].data,
+        name: payload.value
+      }
+    },
+    changeActorDescriptionValue: (
+      state,
+      action: PayloadAction<{
+        areaID: string;
+        nodeID: string;
+        value: string;
+      }>
+    ) => {
+      const payload = action.payload;
+      state[payload.areaID].nodes[payload.nodeID].data = {
+        ...state[payload.areaID].nodes[payload.nodeID].data,
+        description: payload.value
+      }
+    },
+    changeActorInputData: (
+      state,
+      action: PayloadAction<{
+        areaID: string;
         nodeID: string;
         value: string;
         inputID: string;
@@ -108,25 +136,25 @@ export const actorsSlice = createSlice({
       }>
     ) => {
       const payload = action.payload;
-      state[payload.actorID].nodes[payload.nodeID].data[payload.type][payload.inputID] = {
-        ...state[payload.actorID].nodes[payload.nodeID].data[payload.type][payload.inputID],
+      state[payload.areaID].nodes[payload.nodeID].data[payload.type][payload.inputID] = {
+        ...state[payload.areaID].nodes[payload.nodeID].data[payload.type][payload.inputID],
         code: payload.value
       }
     },
     appendActorNodeInput: (
       state,
       action: PayloadAction<{
-        actorID: string;
+        areaID: string;
         nodeID: string;
         type: NodeInputType;
-        input: NodeControlInput | NodeControlOutput;
+        input: portData;
       }>
     ) => {
       const payload = action.payload;
-      state[payload.actorID].nodes[payload.nodeID].data[payload.type] = {
-        ...state[payload.actorID].nodes[payload.nodeID].data[payload.type],
-        [payload.input.id]: payload.input
-      };
+      console.log(state[payload.areaID].nodes[payload.nodeID].data[payload.type])
+      state[payload.areaID].nodes[payload.nodeID].data[payload.type][0].push({
+        [payload.input.id_]: payload.input
+      });
     },
   },
 });
@@ -139,7 +167,9 @@ export const {
   removeActorEdge,
   createActor,
   removeActor,
-  changeActorNodeData,
+  changeActorDescriptionValue,
+  changeActorNameValue,
+  changeActorInputData,
   appendActorNodeInput,
 } = actorsSlice.actions;
 
