@@ -19,7 +19,7 @@ import {
 } from "@/store/slicers/actorsSlicer";
 import { useNodeEditorData } from "@/hooks";
 import { NodesEditorInfo } from "./components/NodesEditorInfo";
-import cn from 'classnames';
+import cn from "classnames";
 
 export const NodesEditor = () => {
   const dispatch = useAppDispatch();
@@ -41,6 +41,7 @@ export const NodesEditor = () => {
       value: e.target.value,
       type,
     };
+
     if (area === "pipeline") {
       dispatch(changePipelineInputData(payload));
     } else {
@@ -132,20 +133,19 @@ export const NodesEditor = () => {
           >
             {selectedNode &&
               inputs.map((inputGroup: portDatas, i: number) => (
-                <ul className={style.nodesEditorInputGroup} key={'inputGroup' + i}>
+                <ul
+                  className={style.nodesEditorInputGroup}
+                  key={"inputGroup" + i}
+                >
                   <span>input_group: {i}</span>
                   {inputGroup.map((input: portData, indx) => (
                     <li key={uuid()}>
-                      <div
-                        className={style.nodesEditorInputBlock}
-                      >
+                      <div className={style.nodesEditorInputBlock}>
                         <UIInput
                           isDisabled={i === 1}
                           placeholder="name"
                           value={input.name}
-                          onChange={(e) =>
-                            onInputChange(e, indx, "g_ports_in")
-                          }
+                          onChange={(e) => onInputChange(e, indx, "g_ports_in")}
                         />
                         <UISelect
                           name="type"
@@ -176,9 +176,7 @@ export const NodesEditor = () => {
                   <span>input_group: {i}</span>
                   {inputGroup.map((input: portData, indx) => (
                     <li key={input.id_}>
-                      <div
-                        className={style.nodesEditorInputBlock}
-                      >
+                      <div className={style.nodesEditorInputBlock}>
                         <UIInput
                           isDisabled={i === 1}
                           placeholder="name"
