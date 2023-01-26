@@ -16,25 +16,25 @@ import {
   removePipelineNode,
   appendPipelineEdge,
   removePipelineEdge,
+  deselectPipelineNodes,
+  selectPipelineNode,
 } from "@/store/slicers/pipelinesSlicer";
 import CustomNode from "../CustomNode/CustomNode";
 import { Link } from "react-router5";
 import { RootState } from "@/store/store";
 import { changeSelectedNode } from "@/store/slicers/selectedSlicer";
 import {
-  defaultCustomNodeActor,
-  defaultCustomNodePipeline,
-} from "@/helpers/constants";
-import {
   appendActorEdge,
   appendActorNode,
   createActor,
+  deselectActorNodes,
   removeActor,
   removeActorEdge,
   removeActorNode,
+  selectActorNode,
   updateActorNode,
 } from "@/store/slicers/actorsSlicer";
-import { connectedRules, createNodeData, getObjectKeys } from "@/helpers/mapping";
+import { connectedRules, getObjectKeys } from "@/helpers/mapping";
 
 interface FlowProps {
   storeNodes: Node[];
@@ -43,6 +43,13 @@ interface FlowProps {
 
 const Flow: FC<FlowProps> = ({ storeNodes, storeEdges }) => {
   const dispatch = useAppDispatch();
+  const { pipelineParams, nodeParams, pipelineData, nodeData } =
+    useAppSelector((state: RootState) => ({
+      pipelineParams: state.uiParams.uiPipelineParams.params.configUIParams,
+      nodeParams: state.uiParams.uiNodeParams.params.configUIParams,
+      pipelineData: state.uiParams.uiPipelineParams.params.initNodesData,
+      nodeData: state.uiParams.uiNodeParams.params.initNodesData
+    }));
   const { pipelineID, actorID } = useAppSelector(
     (state: RootState) => state.route
   );
@@ -76,16 +83,24 @@ const Flow: FC<FlowProps> = ({ storeNodes, storeEdges }) => {
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
-      setNodes((nds) => applyNodeChanges(changes, nds));
+      if (changes.find((e) => e.type === "position")) {
+        setNodes((nds) => applyNodeChanges(changes, nds));
+      }
     },
     [setNodes]
   );
   const onConnect = (connection: Connection) => {
     const sourceNode = nodes.find((e) => e.id === connection.source);
     const targetNode = nodes.find((e) => e.id === connection.target);
+    const { sourceHandle, targetHandle } = connection;
 
-    if (sourceNode && targetNode) {
-      const isValidConnection = connectedRules(sourceNode, targetNode);
+    if (sourceNode && targetNode && sourceHandle && targetHandle) {
+      const isValidConnection = connectedRules(
+        sourceNode,
+        targetNode,
+        sourceHandle,
+        targetHandle
+      );
 
       if (!isValidConnection) {
         return;
@@ -173,6 +188,11 @@ const Flow: FC<FlowProps> = ({ storeNodes, storeEdges }) => {
         nodeID: node.id,
       })
     );
+    if (actorID) {
+      dispatch(selectActorNode({ actorID, nodeID: node.id }));
+    } else {
+      dispatch(selectPipelineNode({ pipelineID, nodeID: node.id }));
+    }
     closeAllMenus();
   };
   const removeNode = () => {
@@ -246,17 +266,22 @@ const Flow: FC<FlowProps> = ({ storeNodes, storeEdges }) => {
         onConnect={onConnect}
         onNodeDragStop={updateNode}
         onEdgeClick={onEdgeClick}
+        selectNodesOnDrag={false}
         onNodeClick={onNodeClick}
         onPaneClick={(e) => {
           closeAllMenus();
-          // updateNode();
-          // dispatch(
-          //   changeSelectedNode({
-          //     area: "",
-          //     areaID: "",
-          //     nodeID: "",
-          //   })
-          // );
+          dispatch(
+            changeSelectedNode({
+              area: actorID ? "actor" : "pipeline",
+              areaID: actorID ? actorID : pipelineID,
+              nodeID: "",
+            })
+          );
+          if (actorID) {
+            dispatch(deselectActorNodes({ actorID }));
+          } else {
+            dispatch(deselectPipelineNodes({ pipelineID }));
+          }
         }}
         onPaneContextMenu={(e) => menuOpener(e, "pane")}
         onNodeContextMenu={(e, node: Node) => {
@@ -282,28 +307,23 @@ const Flow: FC<FlowProps> = ({ storeNodes, storeEdges }) => {
               top: position.mouseViewportPosition.y,
             }}
           >
-            {getObjectKeys(
-              actorID ? defaultCustomNodeActor : defaultCustomNodePipeline
-            ).map((nodeDatas) => (
-              <button
-                key={uuid()}
-                className="menuButton"
-                onClick={(e) => {
-                  appendNode(
-                    e,
-                    "customNode",
-                    createNodeData(
-                      nodeDatas,
-                      actorID
-                        ? defaultCustomNodeActor
-                        : defaultCustomNodePipeline
-                    )
-                  );
-                }}
-              >
-                {nodeDatas}
-              </button>
-            ))}
+            {getObjectKeys(actorID ? nodeParams : pipelineParams).map(
+              (nodeDatas) => (
+                <button
+                  key={uuid()}
+                  className="menuButton"
+                  onClick={(e) => {
+                    appendNode(
+                      e,
+                      "customNode",
+                      actorID ? nodeData[nodeDatas] : pipelineData[nodeDatas]
+                    );
+                  }}
+                >
+                  {nodeDatas}
+                </button>
+              )
+            )}
           </div>
         )}
         {isShowNodeMenu && (
