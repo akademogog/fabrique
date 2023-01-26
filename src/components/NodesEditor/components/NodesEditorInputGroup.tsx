@@ -1,11 +1,12 @@
-import { UIInput, UISelect } from '@/components/UI'
+import { UIIButton, UIInput, UISelect } from '@/components/UI'
 import { useAppDispatch } from '@/store/hooks';
-import { changeActorInputData } from '@/store/slicers/actorsSlicer';
-import { changePipelineInputData } from '@/store/slicers/pipelinesSlicer';
+import { changeActorInputData, removeActorInput } from '@/store/slicers/actorsSlicer';
+import { changePipelineInputData, removePipelineInput } from '@/store/slicers/pipelinesSlicer';
 import { NodeInputType, portData, portDatas } from '@/types/node.types';
 import React from 'react'
 import uuid from 'react-uuid'
 import style from '../NodesEditor.module.scss';
+import IconDelete from '@/assets/img/icon-delete.svg';
 
 interface NodesEditorInputGroupProps {
     areaID: string;
@@ -37,6 +38,26 @@ export const NodesEditorInputGroup: React.FC<NodesEditorInputGroupProps> = ({are
           dispatch(changePipelineInputData(payload));
         } else {
           dispatch(changeActorInputData(payload));
+        }
+    };
+
+    const onInputDelete = (
+        e: any,
+        indx: number,
+        type: NodeInputType,
+      ) => {
+        const payload = {
+          areaID: areaID,
+          nodeID: nodeID,
+          index: indx,
+          value: e.target.value,
+          type
+        };
+    
+        if (area === "pipeline") {
+          dispatch(removePipelineInput(payload));
+        } else {
+          dispatch(removeActorInput(payload));
         }
     };
     
@@ -73,6 +94,9 @@ export const NodesEditorInputGroup: React.FC<NodesEditorInputGroupProps> = ({are
                           { value: "bool", title: "bool" },
                         ]}
                       />
+                      <UIIButton variant='default' onClick={e => onInputDelete(e, indx, inputsType)}>
+                        <img src={IconDelete} alt="delete" />
+                      </UIIButton>
                     </div>
                   </li>
                 ))}

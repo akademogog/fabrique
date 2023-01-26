@@ -125,6 +125,22 @@ export const pipelinesSlice = createSlice({
       const payload = action.payload;
       delete state[payload.pipelineID];
     },
+    removePipelineInput: (
+      state,
+      action: PayloadAction<{
+        areaID: string;
+        nodeID: string;
+        value: string;
+        index: number;
+        type: NodeInputType;
+      }>
+    ) => {
+      const payload = action.payload;
+      state[payload.areaID].nodes[payload.nodeID].data[payload.type][0].splice(
+        payload.index,
+        1
+      );
+    },
     changePipelineInputData: (
       state,
       action: PayloadAction<{
@@ -133,13 +149,17 @@ export const pipelinesSlice = createSlice({
         value: string;
         index: number;
         type: NodeInputType;
-        field: 'name' | 'type_';
+        field: "name" | "type_";
       }>
     ) => {
       const payload = action.payload;
-      state[payload.areaID].nodes[payload.nodeID].data[payload.type][0][payload.index] = {
-         ...state[payload.areaID].nodes[payload.nodeID].data[payload.type][0][payload.index],
-         [payload.field]: payload.value,
+      state[payload.areaID].nodes[payload.nodeID].data[payload.type][0][
+        payload.index
+      ] = {
+        ...state[payload.areaID].nodes[payload.nodeID].data[payload.type][0][
+          payload.index
+        ],
+        [payload.field]: payload.value,
       };
     },
     changePipelineDescriptionValue: (
@@ -203,6 +223,7 @@ export const {
   changePipelineInputData,
   changePipelineNameValue,
   appendPipelineNodeInput,
+  removePipelineInput,
 } = pipelinesSlice.actions;
 
 export default pipelinesSlice.reducer;
