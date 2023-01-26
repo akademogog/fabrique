@@ -213,9 +213,6 @@ export const pipelinesSlice = createSlice({
       }>
     ) => {
       const payload = action.payload;
-      console.log(
-        state[payload.areaID].nodes[payload.nodeID].data[payload.type]
-      );
       state[payload.areaID].nodes[payload.nodeID].data[payload.type][0].push(
         payload.input
       );

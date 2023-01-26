@@ -1,0 +1,23 @@
+.downloadButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background-color: transparent;
+  color: white;
+  padding: 5px 10px;
+  cursor: pointer;
+  text-decoration: none;
+
+  &:hover {
+    background: rgba(143,153,168,.15);
+  }
+
+  svg {
+    margin-left: 10px;
+
+    path {
+      fill: #abb3bf;
+    }
+  }
+}
