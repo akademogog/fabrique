@@ -142,17 +142,19 @@ export const NodesEditor = () => {
                     <li key={uuid()}>
                       <div className={style.nodesEditorInputBlock}>
                         <UIInput
+                          label="name"
                           isDisabled={i === 1}
                           placeholder="name"
                           value={input.name}
                           onChange={(e) => onInputChange(e, indx, "g_ports_in")}
                         />
                         <UISelect
+                          className={style.nodesEditorInputSelect}
                           name="type"
                           options={[
-                            { value: "number", title: "Number" },
-                            { value: "string", title: "String" },
-                            { value: "integer", title: "integer" },
+                            { value: "any", title: "any" },
+                            { value: "int", title: "int" },
+                            { value: "bool", title: "bool" },
                           ]}
                         />
                       </div>
@@ -178,6 +180,7 @@ export const NodesEditor = () => {
                     <li key={input.id_}>
                       <div className={style.nodesEditorInputBlock}>
                         <UIInput
+                          label="name"
                           isDisabled={i === 1}
                           placeholder="name"
                           value={input.name}
@@ -186,11 +189,12 @@ export const NodesEditor = () => {
                           }
                         />
                         <UISelect
+                          className={style.nodesEditorInputSelect}
                           name="type"
                           options={[
-                            { value: "number", title: "Number" },
-                            { value: "string", title: "String" },
-                            { value: "integer", title: "integer" },
+                            { value: "any", title: "any" },
+                            { value: "int", title: "int" },
+                            { value: "bool", title: "bool" },
                           ]}
                         />
                       </div>
