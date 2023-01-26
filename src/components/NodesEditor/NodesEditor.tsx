@@ -19,7 +19,6 @@ import {
 } from "@/store/slicers/actorsSlicer";
 import { useNodeEditorData } from "@/hooks";
 import { NodesEditorInfo } from "./components/NodesEditorInfo";
-import cn from "classnames";
 import { NodesEditorInputGroup } from "./components/NodesEditorInputGroup";
 
 export const NodesEditor = () => {
