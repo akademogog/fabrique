@@ -33,13 +33,14 @@ export const NodesEditor = () => {
     nodeID
   );
 
-  const onInputChange = (e: any, indx: number, type: NodeInputType) => {
+  const onInputChange = (e: any, indx: number, type: NodeInputType, field: 'name' | 'type_') => {
     const payload = {
       areaID: areaID,
       nodeID: nodeID,
       index: indx,
       value: e.target.value,
       type,
+      field
     };
 
     if (area === "pipeline") {
@@ -146,11 +147,13 @@ export const NodesEditor = () => {
                           isDisabled={i === 1}
                           placeholder="name"
                           value={input.name}
-                          onChange={(e) => onInputChange(e, indx, "g_ports_in")}
+                          onChange={(e) => onInputChange(e, indx, "g_ports_in", 'name')}
                         />
                         <UISelect
                           className={style.nodesEditorInputSelect}
                           name="type"
+                          value={input.type_}
+                          onChange={(e) => onInputChange(e, indx, "g_ports_in", 'type_') }
                           options={[
                             { value: "any", title: "any" },
                             { value: "int", title: "int" },
@@ -185,12 +188,14 @@ export const NodesEditor = () => {
                           placeholder="name"
                           value={input.name}
                           onChange={(e) =>
-                            onInputChange(e, indx, "g_ports_out")
+                            onInputChange(e, indx, "g_ports_out", 'name')
                           }
                         />
                         <UISelect
                           className={style.nodesEditorInputSelect}
                           name="type"
+                          onChange={(e) => onInputChange(e, indx, "g_ports_out", 'type_') }
+                          value={input.type_}
                           options={[
                             { value: "any", title: "any" },
                             { value: "int", title: "int" },

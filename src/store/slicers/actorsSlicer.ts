@@ -157,12 +157,13 @@ export const actorsSlice = createSlice({
         value: string;
         index: number;
         type: NodeInputType;
+        field: 'name' | 'type_';
       }>
     ) => {
          const payload = action.payload;
          state[payload.areaID].nodes[payload.nodeID].data[payload.type][0][payload.index] = {
           ...state[payload.areaID].nodes[payload.nodeID].data[payload.type][0][payload.index],
-           name: payload.value
+           [payload.field]: payload.value
          }
     },
     appendActorNodeInput: (
