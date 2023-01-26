@@ -1,6 +1,6 @@
 import { customNode } from "@/types/groupPorts.types";
 import uuid from "react-uuid";
-import { defaultCustomNodeActor } from "./constants";
+import { Node } from "reactflow";
 
 export const objectToArray = (object: any) => {
   const array = [];
@@ -28,7 +28,22 @@ export const arrayToObject = (array: any[]) => {
 
 export const createNodeData = (key: string, UIParams: customNode) => {
   const inputsData = UIParams[key].input_groups.map((group) => {
-    const inputData = [
+    if (key === "Topic") {
+      return [
+        {
+          code: group.valid_types[0],
+          id_: uuid(),
+          name: "value",
+          required: true,
+          schema_: "",
+          special: false,
+          type_: group.valid_types[0],
+          visible: true,
+        },
+      ];
+    }
+
+    return [
       {
         code: "",
         id_: uuid(),
@@ -40,11 +55,25 @@ export const createNodeData = (key: string, UIParams: customNode) => {
         visible: true,
       },
     ];
-    return inputData;
   });
 
   const outputsData = UIParams[key].output_groups.map((group) => {
-    const outputData = [
+    if (key === "Topic") {
+      return [
+        {
+          code: group.valid_types[0],
+          id_: uuid(),
+          name: "value",
+          required: true,
+          schema_: "",
+          special: false,
+          type_: group.valid_types[0],
+          visible: true,
+        },
+      ];
+    }
+
+    return [
       {
         code: "",
         id_: uuid(),
@@ -56,15 +85,14 @@ export const createNodeData = (key: string, UIParams: customNode) => {
         visible: true,
       },
     ];
-    return outputData;
   });
 
   return {
     category: "",
     description: "",
     label: key,
-    g_ports_in: key === "Actor" || key === "Topic" ? [] : inputsData,
-    g_ports_out: key === "Actor" || key === "Topic" ? [] : outputsData,
+    g_ports_in: inputsData,
+    g_ports_out: outputsData,
     group_type_: null,
     name: key,
     schema_: "",
@@ -73,8 +101,15 @@ export const createNodeData = (key: string, UIParams: customNode) => {
   };
 };
 
-export const getPipelineJson = (pipelineID: string) => {
+export const getPipelineJson = (pipelineID: string, actorID?: string) => {
   const jsonLocalState = localStorage.getItem("persist:root");
+  if (actorID) {
+    if (jsonLocalState) {
+      const localeState = JSON.parse(jsonLocalState);
+      const localeActors = JSON.parse(localeState.actors);
+      return localeActors[actorID];
+    }
+  }
   if (jsonLocalState) {
     const localeState = JSON.parse(jsonLocalState);
     const localePipelines = JSON.parse(localeState.pipelines);
@@ -88,4 +123,20 @@ export const getPipelineJson = (pipelineID: string) => {
     currentLocalePilpeline["actors"] = currentLocalePilpelineActor;
     return currentLocalePilpeline;
   }
+};
+
+export const connectedRules = (sourceNode: Node, targetNode: Node) => {
+  type TRules = {
+    [name: string]: string[]
+  }
+  
+  const rules: TRules = {
+    Actor: ["Actor"],
+    Topic: ["Topic"],
+  };
+
+  if (rules[sourceNode?.data.type_].find(e => e != targetNode?.data.type_)) {
+    return true;
+  }
+  return false;
 };

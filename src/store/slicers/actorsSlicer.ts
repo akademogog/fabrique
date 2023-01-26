@@ -1,10 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { Actor } from "@/types/actor.types";
-import { Edge } from "reactflow";
-import { Node } from "@/types/node.types";
+import { Edge, Node as FlowNode } from "reactflow";
+import { portData } from "@/types/node.types";
 import { arrayToObject } from "@/helpers/mapping";
-import { NodeControlInput, NodeControlOutput, NodeInputType } from "@/types/node.types";
+import {
+  NodeInputType,
+} from "@/types/node.types";
 
 interface InitialState {
   [id: string]: Actor;
@@ -20,7 +22,7 @@ export const actorsSlice = createSlice({
       state,
       action: PayloadAction<{
         actorID: string;
-        nodes: Node[];
+        nodes: FlowNode[];
       }>
     ) => {
       const payload = action.payload;
@@ -30,13 +32,13 @@ export const actorsSlice = createSlice({
       state,
       action: PayloadAction<{
         actorID: string;
-        id: string,
+        id: string;
         position: { x: number; y: number };
         type: string;
         data: any;
       }>
     ) => {
-      const payload = action.payload;   
+      const payload = action.payload;
       state[payload.actorID].nodes[payload.id] = {
         id: payload.id,
         position: payload.position,
@@ -62,7 +64,6 @@ export const actorsSlice = createSlice({
       }>
     ) => {
       const payload = action.payload;
-      console.log(payload);
       state[payload.actorID].edges[payload.edge.id] = payload.edge;
     },
     removeActorEdge: (
@@ -88,6 +89,29 @@ export const actorsSlice = createSlice({
         edges: {},
       };
     },
+    setActorState: (
+      state,
+      action: PayloadAction<{
+        actorID: string;
+        actor: Actor;
+      }>
+    ) => {
+      const payload = action.payload;
+      state[payload.actorID].nodes = payload.actor.nodes;
+      state[payload.actorID].edges = payload.actor.edges;
+    },
+    setProjectActors: (
+      state,
+      action: PayloadAction<{
+        actors: InitialState;
+      }>
+    ) => {
+      const payload = action.payload;
+      const actors = payload.actors;
+      for (const key in actors) {
+        state[key] = actors[key];
+      }
+    },
     removeActor: (
       state,
       action: PayloadAction<{
@@ -97,36 +121,63 @@ export const actorsSlice = createSlice({
       const payload = action.payload;
       delete state[payload.actorID];
     },
-    changeActorNodeData: (
+    changeActorNameValue: (
       state,
       action: PayloadAction<{
-        actorID: string;
+        areaID: string;
         nodeID: string;
         value: string;
-        inputID: string;
-        type: NodeInputType;
       }>
     ) => {
       const payload = action.payload;
-      state[payload.actorID].nodes[payload.nodeID].data[payload.type][payload.inputID] = {
-        ...state[payload.actorID].nodes[payload.nodeID].data[payload.type][payload.inputID],
-        code: payload.value
-      }
+      state[payload.areaID].nodes[payload.nodeID].data = {
+        ...state[payload.areaID].nodes[payload.nodeID].data,
+        name: payload.value,
+      };
+    },
+    changeActorDescriptionValue: (
+      state,
+      action: PayloadAction<{
+        areaID: string;
+        nodeID: string;
+        value: string;
+      }>
+    ) => {
+      const payload = action.payload;
+      state[payload.areaID].nodes[payload.nodeID].data = {
+        ...state[payload.areaID].nodes[payload.nodeID].data,
+        description: payload.value,
+      };
+    },
+    changeActorInputData: (
+      state,
+      action: PayloadAction<{
+        areaID: string;
+        nodeID: string;
+        value: string;
+        index: number;
+        type: NodeInputType;
+      }>
+    ) => {
+         const payload = action.payload;
+         state[payload.areaID].nodes[payload.nodeID].data[payload.type][0][payload.index] = {
+          ...state[payload.areaID].nodes[payload.nodeID].data[payload.type][0][payload.index],
+           name: payload.value
+         }
     },
     appendActorNodeInput: (
       state,
       action: PayloadAction<{
-        actorID: string;
+        areaID: string;
         nodeID: string;
         type: NodeInputType;
-        input: NodeControlInput | NodeControlOutput;
+        input: portData;
       }>
     ) => {
       const payload = action.payload;
-      state[payload.actorID].nodes[payload.nodeID].data[payload.type] = {
-        ...state[payload.actorID].nodes[payload.nodeID].data[payload.type],
-        [payload.input.id]: payload.input
-      };
+      state[payload.areaID].nodes[payload.nodeID].data[payload.type][0].push(
+        payload.input
+      );
     },
   },
 });
@@ -138,8 +189,12 @@ export const {
   appendActorEdge,
   removeActorEdge,
   createActor,
+  setProjectActors,
   removeActor,
-  changeActorNodeData,
+  setActorState,
+  changeActorDescriptionValue,
+  changeActorNameValue,
+  changeActorInputData,
   appendActorNodeInput,
 } = actorsSlice.actions;
 

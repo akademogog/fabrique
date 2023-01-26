@@ -7,7 +7,7 @@ import { RootState } from "@/store/store";
 import { customNode } from "@/types/groupPorts.types";
 import { NodeData } from "@/types/node.types";
 import { useMemo } from "react";
-import { Handle, Position } from "reactflow";
+import { Handle, Position, useOnSelectionChange } from "reactflow";
 import style from "./CustomNode.module.scss";
 
 interface customNodeProps {
@@ -43,7 +43,7 @@ const ConstantsNode: React.FC<customNodeProps> = ({ data }) => {
               {data.g_ports_out?.length
                 ? data.g_ports_out[index].map((port) => (
                     <div className={`${style.rightHandle}`} key={port.id_}>
-                      <span className={`${style.handleText}`}>{port.code}</span>
+                      <span className={`${style.handleText}`}>{port.name}</span>
                       <Handle
                         id={port.id_}
                         className={`${style.handleCircle}`}
@@ -77,7 +77,7 @@ const ConstantsNode: React.FC<customNodeProps> = ({ data }) => {
                         type="target"
                         position={Position.Left}
                       />
-                      <span className={`${style.handleText}`}>{port.code}</span>
+                      <span className={`${style.handleText}`}>{port.name}</span>
                     </div>
                   ))
                 : ""}

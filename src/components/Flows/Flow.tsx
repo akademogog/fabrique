@@ -34,11 +34,7 @@ import {
   removeActorNode,
   updateActorNode,
 } from "@/store/slicers/actorsSlicer";
-import {
-  createNodeData,
-  getObjectKeys,
-  objectToArray,
-} from "@/helpers/mapping";
+import { connectedRules, createNodeData, getObjectKeys } from "@/helpers/mapping";
 
 interface FlowProps {
   storeNodes: Node[];
@@ -85,6 +81,17 @@ const Flow: FC<FlowProps> = ({ storeNodes, storeEdges }) => {
     [setNodes]
   );
   const onConnect = (connection: Connection) => {
+    const sourceNode = nodes.find((e) => e.id === connection.source);
+    const targetNode = nodes.find((e) => e.id === connection.target);
+
+    if (sourceNode && targetNode) {
+      const isValidConnection = connectedRules(sourceNode, targetNode);
+
+      if (!isValidConnection) {
+        return;
+      }
+    }
+
     const edge = {
       ...connection,
       id: `e${connection.source}_${connection.sourceHandle}-${connection.target}_${connection.targetHandle}`,
@@ -112,8 +119,9 @@ const Flow: FC<FlowProps> = ({ storeNodes, storeEdges }) => {
   };
   const menuOpener = (e: React.MouseEvent, menuType?: string, node?: Node) => {
     e.preventDefault();
+    const headerHeight = 50;
     let x = e.pageX,
-      y = e.pageY;
+      y = e.pageY - headerHeight;
     if (menuType === "pane") {
       setIsShowNodeMenu(undefined);
       setIsShowPaneMenu(true);
@@ -201,7 +209,7 @@ const Flow: FC<FlowProps> = ({ storeNodes, storeEdges }) => {
     setIsShowNodeMenu(undefined);
     setIsShowPaneMenu(false);
   };
-  const onNodeDragStop = () => {
+  const updateNode = () => {
     if (actorID) {
       dispatch(
         updateActorNode({
@@ -236,10 +244,20 @@ const Flow: FC<FlowProps> = ({ storeNodes, storeEdges }) => {
         nodeOrigin={[0.5, 0]}
         onNodesChange={onNodesChange}
         onConnect={onConnect}
-        onNodeDragStop={onNodeDragStop}
+        onNodeDragStop={updateNode}
         onEdgeClick={onEdgeClick}
         onNodeClick={onNodeClick}
-        onPaneClick={closeAllMenus}
+        onPaneClick={(e) => {
+          closeAllMenus();
+          // updateNode();
+          // dispatch(
+          //   changeSelectedNode({
+          //     area: "",
+          //     areaID: "",
+          //     nodeID: "",
+          //   })
+          // );
+        }}
         onPaneContextMenu={(e) => menuOpener(e, "pane")}
         onNodeContextMenu={(e, node: Node) => {
           setcurrentContextNode(node.id);
@@ -311,7 +329,7 @@ const Flow: FC<FlowProps> = ({ storeNodes, storeEdges }) => {
             >
               Clone
             </button>
-            {!actorID && (
+            {!actorID && isShowNodeMenu.data.type_ !== "Topic" && (
               <Link
                 className="menuButton"
                 onClick={closeAllMenus}
