@@ -4,9 +4,7 @@ import { Actor } from "@/types/actor.types";
 import { Edge, Node as FlowNode } from "reactflow";
 import { portData } from "@/types/node.types";
 import { arrayToObject } from "@/helpers/mapping";
-import {
-  NodeInputType,
-} from "@/types/node.types";
+import { NodeInputType } from "@/types/node.types";
 
 interface InitialState {
   [id: string]: Actor;
@@ -190,13 +188,34 @@ export const actorsSlice = createSlice({
         value: string;
         index: number;
         type: NodeInputType;
+        field: "name" | "type_";
       }>
     ) => {
-         const payload = action.payload;
-         state[payload.areaID].nodes[payload.nodeID].data[payload.type][0][payload.index] = {
-          ...state[payload.areaID].nodes[payload.nodeID].data[payload.type][0][payload.index],
-           name: payload.value
-         }
+      const payload = action.payload;
+      state[payload.areaID].nodes[payload.nodeID].data[payload.type][0][
+        payload.index
+      ] = {
+        ...state[payload.areaID].nodes[payload.nodeID].data[payload.type][0][
+          payload.index
+        ],
+        [payload.field]: payload.value,
+      };
+    },
+    removeActorInput: (
+      state,
+      action: PayloadAction<{
+        areaID: string;
+        nodeID: string;
+        value: string;
+        index: number;
+        type: NodeInputType;
+      }>
+    ) => {
+      const payload = action.payload;
+      state[payload.areaID].nodes[payload.nodeID].data[payload.type][0].splice(
+        payload.index,
+        1
+      );
     },
     appendActorNodeInput: (
       state,
@@ -231,6 +250,7 @@ export const {
   changeActorNameValue,
   changeActorInputData,
   appendActorNodeInput,
+  removeActorInput,
 } = actorsSlice.actions;
 
 export default actorsSlice.reducer;

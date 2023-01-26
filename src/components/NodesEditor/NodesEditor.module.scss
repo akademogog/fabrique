@@ -34,9 +34,24 @@
       list-style: none;
       margin-bottom: 10px;
     }
+    &Select{
+      width: fit-content;
+      padding: 5px;
+      cursor: pointer;
+      text-align: center;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      &::-ms-expand {
+        display: none;
+      }
+    }
     &Block {
-      display: flex;
-      justify-content: space-between;
+      margin-top: 5px;
+      width: 100%;
+      display: grid;
+      grid-template-columns:220px auto 50px;
+      gap: 5px;
     }
   }
 }
