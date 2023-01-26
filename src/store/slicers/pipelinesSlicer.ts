@@ -69,6 +69,40 @@ export const pipelinesSlice = createSlice({
         delete state[payload.pipelineID].nodes[payload.nodeID];
       }
     },
+    deselectPipelineNodes: (
+      state,
+      action: PayloadAction<{
+        pipelineID: string;
+      }>
+    ) => {
+      const payload = action.payload;
+      for (const key in state[payload.pipelineID].nodes) {
+        if (Object.prototype.hasOwnProperty.call(state[payload.pipelineID].nodes, key)) {
+          state[payload.pipelineID].nodes[key] = {
+            ...state[payload.pipelineID].nodes[key],
+            selected: false,
+          }
+        }
+      }
+    },
+    selectPipelineNode: (
+      state,
+      action: PayloadAction<{
+        pipelineID: string;
+        nodeID: string;
+      }>
+    ) => {
+      const payload = action.payload;
+
+      for (const key in state[payload.pipelineID].nodes) {
+        if (Object.prototype.hasOwnProperty.call(state[payload.pipelineID].nodes, key)) {
+          state[payload.pipelineID].nodes[key] = {
+            ...state[payload.pipelineID].nodes[key],
+            selected: key === payload.nodeID ? true : false,
+          }
+        }
+      }
+    },
     appendPipelineEdge: (
       state,
       action: PayloadAction<{
@@ -193,6 +227,8 @@ export const {
   updatePipelineNode,
   appendPipelineNode,
   removePipelineNode,
+  deselectPipelineNodes,
+  selectPipelineNode,
   appendPipelineEdge,
   removePipelineEdge,
   createPipeline,

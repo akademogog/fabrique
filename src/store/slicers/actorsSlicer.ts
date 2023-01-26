@@ -56,6 +56,39 @@ export const actorsSlice = createSlice({
       const payload = action.payload;
       delete state[payload.actorID].nodes[payload.nodeID];
     },
+    deselectActorNodes: (
+      state,
+      action: PayloadAction<{
+        actorID: string;
+      }>
+    ) => {
+      const payload = action.payload;
+      for (const key in state[payload.actorID].nodes) {
+        if (Object.prototype.hasOwnProperty.call(state[payload.actorID].nodes, key)) {
+          state[payload.actorID].nodes[key] = {
+            ...state[payload.actorID].nodes[key],
+            selected: false,
+          }
+        }
+      }
+    },
+    selectActorNode: (
+      state,
+      action: PayloadAction<{
+        actorID: string;
+        nodeID: string;
+      }>
+    ) => {
+      const payload = action.payload;
+      for (const key in state[payload.actorID].nodes) {
+        if (Object.prototype.hasOwnProperty.call(state[payload.actorID].nodes, key)) {
+          state[payload.actorID].nodes[key] = {
+            ...state[payload.actorID].nodes[key],
+            selected: key === payload.nodeID ? true : false,
+          }
+        }
+      }
+    },
     appendActorEdge: (
       state,
       action: PayloadAction<{
@@ -186,6 +219,8 @@ export const {
   updateActorNode,
   appendActorNode,
   removeActorNode,
+  deselectActorNodes,
+  selectActorNode,
   appendActorEdge,
   removeActorEdge,
   createActor,

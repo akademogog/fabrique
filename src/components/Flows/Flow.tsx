@@ -16,6 +16,8 @@ import {
   removePipelineNode,
   appendPipelineEdge,
   removePipelineEdge,
+  deselectPipelineNodes,
+  selectPipelineNode,
 } from "@/store/slicers/pipelinesSlicer";
 import CustomNode from "../CustomNode/CustomNode";
 import { Link } from "react-router5";
@@ -29,12 +31,18 @@ import {
   appendActorEdge,
   appendActorNode,
   createActor,
+  deselectActorNodes,
   removeActor,
   removeActorEdge,
   removeActorNode,
+  selectActorNode,
   updateActorNode,
 } from "@/store/slicers/actorsSlicer";
-import { connectedRules, createNodeData, getObjectKeys } from "@/helpers/mapping";
+import {
+  connectedRules,
+  createNodeData,
+  getObjectKeys,
+} from "@/helpers/mapping";
 
 interface FlowProps {
   storeNodes: Node[];
@@ -76,7 +84,9 @@ const Flow: FC<FlowProps> = ({ storeNodes, storeEdges }) => {
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
-      setNodes((nds) => applyNodeChanges(changes, nds));
+      if (changes.find((e) => e.type === "position")) {
+        setNodes((nds) => applyNodeChanges(changes, nds));
+      }
     },
     [setNodes]
   );
@@ -173,6 +183,11 @@ const Flow: FC<FlowProps> = ({ storeNodes, storeEdges }) => {
         nodeID: node.id,
       })
     );
+    if (actorID) {
+      dispatch(selectActorNode({ actorID, nodeID: node.id }));
+    } else {
+      dispatch(selectPipelineNode({ pipelineID, nodeID: node.id }));
+    }
     closeAllMenus();
   };
   const removeNode = () => {
@@ -246,17 +261,22 @@ const Flow: FC<FlowProps> = ({ storeNodes, storeEdges }) => {
         onConnect={onConnect}
         onNodeDragStop={updateNode}
         onEdgeClick={onEdgeClick}
+        selectNodesOnDrag={false}
         onNodeClick={onNodeClick}
         onPaneClick={(e) => {
           closeAllMenus();
-          // updateNode();
-          // dispatch(
-          //   changeSelectedNode({
-          //     area: "",
-          //     areaID: "",
-          //     nodeID: "",
-          //   })
-          // );
+          dispatch(
+            changeSelectedNode({
+              area: actorID ? "actor" : "pipeline",
+              areaID: actorID ? actorID : pipelineID,
+              nodeID: "",
+            })
+          );
+          if (actorID) {
+            dispatch(deselectActorNodes({ actorID }));
+          } else {
+            dispatch(deselectPipelineNodes({ pipelineID }));
+          }
         }}
         onPaneContextMenu={(e) => menuOpener(e, "pane")}
         onNodeContextMenu={(e, node: Node) => {

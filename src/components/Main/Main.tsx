@@ -21,8 +21,8 @@ const Main = () => {
       );
       dispatch(
         changeSelectedNode({
-          area: "",
-          areaID: "",
+          area: (name === "actor" ? "actor" : "") || (name === "projects" ? "pipeline"  : ""),
+          areaID: (name === "actor" ? route.params.actorID : "") || (name === "projects" ? route.params.pipelineID  : ""),
           nodeID: "",
         })
       );

@@ -31,9 +31,9 @@ export const createNodeData = (key: string, UIParams: customNode) => {
     if (key === "Topic") {
       return [
         {
-          code: group.valid_types[0],
+          code: "",
           id_: uuid(),
-          name: "value",
+          name: group.valid_types[0],
           required: true,
           schema_: "",
           special: false,
@@ -41,6 +41,10 @@ export const createNodeData = (key: string, UIParams: customNode) => {
           visible: true,
         },
       ];
+    }
+
+    if (key === "Actor") {
+      return [];
     }
 
     return [
@@ -61,9 +65,9 @@ export const createNodeData = (key: string, UIParams: customNode) => {
     if (key === "Topic") {
       return [
         {
-          code: group.valid_types[0],
+          code: "",
           id_: uuid(),
-          name: "value",
+          name: group.valid_types[0],
           required: true,
           schema_: "",
           special: false,
@@ -71,6 +75,10 @@ export const createNodeData = (key: string, UIParams: customNode) => {
           visible: true,
         },
       ];
+    }
+
+    if (key === "Actor") {
+      return [];
     }
 
     return [
@@ -134,6 +142,10 @@ export const connectedRules = (sourceNode: Node, targetNode: Node) => {
     Actor: ["Actor"],
     Topic: ["Topic"],
   };
+  
+  if (!rules[sourceNode?.data.type_]) {
+    return true;
+  }
 
   if (rules[sourceNode?.data.type_].find(e => e != targetNode?.data.type_)) {
     return true;
