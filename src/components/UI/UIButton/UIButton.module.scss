@@ -13,6 +13,10 @@
     font-size: 16px;
 }
 
+button.default{
+    border: 1px solid rgb(41, 41, 41);
+    width: fit-content;
+}
 .button.plus{ 
     display: flex;
     align-items: center;

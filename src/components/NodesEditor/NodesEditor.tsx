@@ -20,6 +20,7 @@ import {
 import { useNodeEditorData } from "@/hooks";
 import { NodesEditorInfo } from "./components/NodesEditorInfo";
 import cn from "classnames";
+import { NodesEditorInputGroup } from "./components/NodesEditorInputGroup";
 
 export const NodesEditor = () => {
   const dispatch = useAppDispatch();
@@ -33,13 +34,19 @@ export const NodesEditor = () => {
     nodeID
   );
 
-  const onInputChange = (e: any, indx: number, type: NodeInputType) => {
+  const onInputChange = (
+    e: any,
+    indx: number,
+    type: NodeInputType,
+    field: "name" | "type_"
+  ) => {
     const payload = {
       areaID: areaID,
       nodeID: nodeID,
       index: indx,
       value: e.target.value,
       type,
+      field,
     };
 
     if (area === "pipeline") {
@@ -131,35 +138,13 @@ export const NodesEditor = () => {
               />
             }
           >
-            {selectedNode &&
-              inputs.map((inputGroup: portDatas, i: number) => (
-                <ul
-                  className={style.nodesEditorInputGroup}
-                  key={"inputGroup" + i}
-                >
-                  <span>input_group: {i}</span>
-                  {inputGroup.map((input: portData, indx) => (
-                    <li key={uuid()}>
-                      <div className={style.nodesEditorInputBlock}>
-                        <UIInput
-                          isDisabled={i === 1}
-                          placeholder="name"
-                          value={input.name}
-                          onChange={(e) => onInputChange(e, indx, "g_ports_in")}
-                        />
-                        <UISelect
-                          name="type"
-                          options={[
-                            { value: "number", title: "Number" },
-                            { value: "string", title: "String" },
-                            { value: "integer", title: "integer" },
-                          ]}
-                        />
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              ))}
+            <NodesEditorInputGroup
+              inputs={inputs}
+              area={area}
+              areaID={areaID}
+              nodeID={nodeID}
+              inputsType={"g_ports_in"}
+            />
           </NodesEditorSection>
           <NodesEditorSection
             title="Outputs"
@@ -170,34 +155,13 @@ export const NodesEditor = () => {
               />
             }
           >
-            {selectedNode &&
-              outputs.map((inputGroup: portDatas, i: number) => (
-                <ul className={style.nodesEditorInputGroup} key={uuid()}>
-                  <span>input_group: {i}</span>
-                  {inputGroup.map((input: portData, indx) => (
-                    <li key={input.id_}>
-                      <div className={style.nodesEditorInputBlock}>
-                        <UIInput
-                          isDisabled={i === 1}
-                          placeholder="name"
-                          value={input.name}
-                          onChange={(e) =>
-                            onInputChange(e, indx, "g_ports_out")
-                          }
-                        />
-                        <UISelect
-                          name="type"
-                          options={[
-                            { value: "number", title: "Number" },
-                            { value: "string", title: "String" },
-                            { value: "integer", title: "integer" },
-                          ]}
-                        />
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              ))}
+            <NodesEditorInputGroup
+              inputs={outputs}
+              area={area}
+              areaID={areaID}
+              nodeID={nodeID}
+              inputsType={"g_ports_out"}
+            />
           </NodesEditorSection>
         </>
       )}
