@@ -1,6 +1,6 @@
 .flowAreaContainer {
   min-height: 400px;
-  height: 100vh;
+  height: calc(100vh - 50px);
   width: 100%;
   display: flex;
 }

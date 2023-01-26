@@ -1,6 +1,8 @@
-import { customNode } from "@/types/groupPorts.types";
-import uuid from "react-uuid";
 import { Node } from "reactflow";
+import { portData, portDatas } from "@/types/node.types";
+type TRules = {
+  [name: string]: string[];
+};
 
 export const objectToArray = (object: any) => {
   const array = [];
@@ -24,89 +26,6 @@ export const arrayToObject = (array: any[]) => {
     object[e.id] = e;
   });
   return object;
-};
-
-export const createNodeData = (key: string, UIParams: customNode) => {
-  const inputsData = UIParams[key].input_groups.map((group) => {
-    if (key === "Topic") {
-      return [
-        {
-          code: "",
-          id_: uuid(),
-          name: group.valid_types[0],
-          required: true,
-          schema_: "",
-          special: false,
-          type_: group.valid_types[0],
-          visible: true,
-        },
-      ];
-    }
-
-    if (key === "Actor") {
-      return [];
-    }
-
-    return [
-      {
-        code: "",
-        id_: uuid(),
-        name: "value",
-        required: true,
-        schema_: "",
-        special: false,
-        type_: "any",
-        visible: true,
-      },
-    ];
-  });
-
-  const outputsData = UIParams[key].output_groups.map((group) => {
-    if (key === "Topic") {
-      return [
-        {
-          code: "",
-          id_: uuid(),
-          name: group.valid_types[0],
-          required: true,
-          schema_: "",
-          special: false,
-          type_: group.valid_types[0],
-          visible: true,
-        },
-      ];
-    }
-
-    if (key === "Actor") {
-      return [];
-    }
-
-    return [
-      {
-        code: "",
-        id_: uuid(),
-        name: "value",
-        required: true,
-        schema_: "",
-        special: false,
-        type_: "any",
-        visible: true,
-      },
-    ];
-  });
-
-  return {
-    category: "",
-    description: "",
-    label: key,
-    g_ports_in: inputsData,
-    g_ports_out: outputsData,
-    group_type_: null,
-    name: key,
-    schema_: "",
-    type_: key,
-    ui_config: null,
-  };
 };
 
 export const getPipelineJson = (pipelineID: string, actorID?: string) => {
@@ -133,22 +52,52 @@ export const getPipelineJson = (pipelineID: string, actorID?: string) => {
   }
 };
 
-export const connectedRules = (sourceNode: Node, targetNode: Node) => {
-  type TRules = {
-    [name: string]: string[]
-  }
-  
-  const rules: TRules = {
-    Actor: ["Actor"],
-    Topic: ["Topic"],
+export const connectedRules = (
+  sourceNode: Node,
+  targetNode: Node,
+  sourceHandle: string,
+  targetHandle: string
+) => {
+  let sourceHadleType: string = "";
+  let targetHadleType: string = "";
+  sourceNode.data.g_ports_out.find((group: portDatas) => {
+    group.find((handle: portData) => {
+      if (handle.id_ === sourceHandle) {
+        sourceHadleType = handle.type_;
+      }
+    });
+  });
+  targetNode.data.g_ports_in.find((group: portDatas) => {
+    group.find((handle: portData) => {
+      if (handle.id_ === targetHandle) {
+        targetHadleType = handle.type_;
+      }
+    });
+  });
+
+  const whitelistFromTo: TRules = {
+    number: ["number", "integer", "bool", "any"],
+    integer: ["number", "integer", "bool", "any"],
+    string: ["string", "bool", "any"],
+    object: ["object", "bool", "any"],
+    array: ["array", "bool", "any"],
+    bool: ["bool", "any"],
+    any: ["number", "integer", "string", "object", "array", "bool", "any"],
+    bus_in: ["bus_in"],
+    bus_out: ["bus_out"],
   };
-  
-  if (!rules[sourceNode?.data.type_]) {
+
+  if (!whitelistFromTo[sourceHadleType]) {
+    return false;
+  }
+
+  if (
+    whitelistFromTo[sourceHadleType].find(
+      (allowedType) => allowedType === targetHadleType
+    )
+  ) {
     return true;
   }
 
-  if (rules[sourceNode?.data.type_].find(e => e != targetNode?.data.type_)) {
-    return true;
-  }
   return false;
 };

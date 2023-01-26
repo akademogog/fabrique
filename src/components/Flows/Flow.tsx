@@ -24,10 +24,6 @@ import { Link } from "react-router5";
 import { RootState } from "@/store/store";
 import { changeSelectedNode } from "@/store/slicers/selectedSlicer";
 import {
-  defaultCustomNodeActor,
-  defaultCustomNodePipeline,
-} from "@/helpers/constants";
-import {
   appendActorEdge,
   appendActorNode,
   createActor,
@@ -38,11 +34,7 @@ import {
   selectActorNode,
   updateActorNode,
 } from "@/store/slicers/actorsSlicer";
-import {
-  connectedRules,
-  createNodeData,
-  getObjectKeys,
-} from "@/helpers/mapping";
+import { connectedRules, getObjectKeys } from "@/helpers/mapping";
 
 interface FlowProps {
   storeNodes: Node[];
@@ -51,6 +43,13 @@ interface FlowProps {
 
 const Flow: FC<FlowProps> = ({ storeNodes, storeEdges }) => {
   const dispatch = useAppDispatch();
+  const { pipelineParams, nodeParams, pipelineData, nodeData } =
+    useAppSelector((state: RootState) => ({
+      pipelineParams: state.uiParams.uiPipelineParams.params.configUIParams,
+      nodeParams: state.uiParams.uiNodeParams.params.configUIParams,
+      pipelineData: state.uiParams.uiPipelineParams.params.initNodesData,
+      nodeData: state.uiParams.uiNodeParams.params.initNodesData
+    }));
   const { pipelineID, actorID } = useAppSelector(
     (state: RootState) => state.route
   );
@@ -93,9 +92,15 @@ const Flow: FC<FlowProps> = ({ storeNodes, storeEdges }) => {
   const onConnect = (connection: Connection) => {
     const sourceNode = nodes.find((e) => e.id === connection.source);
     const targetNode = nodes.find((e) => e.id === connection.target);
+    const { sourceHandle, targetHandle } = connection;
 
-    if (sourceNode && targetNode) {
-      const isValidConnection = connectedRules(sourceNode, targetNode);
+    if (sourceNode && targetNode && sourceHandle && targetHandle) {
+      const isValidConnection = connectedRules(
+        sourceNode,
+        targetNode,
+        sourceHandle,
+        targetHandle
+      );
 
       if (!isValidConnection) {
         return;
@@ -302,28 +307,23 @@ const Flow: FC<FlowProps> = ({ storeNodes, storeEdges }) => {
               top: position.mouseViewportPosition.y,
             }}
           >
-            {getObjectKeys(
-              actorID ? defaultCustomNodeActor : defaultCustomNodePipeline
-            ).map((nodeDatas) => (
-              <button
-                key={uuid()}
-                className="menuButton"
-                onClick={(e) => {
-                  appendNode(
-                    e,
-                    "customNode",
-                    createNodeData(
-                      nodeDatas,
-                      actorID
-                        ? defaultCustomNodeActor
-                        : defaultCustomNodePipeline
-                    )
-                  );
-                }}
-              >
-                {nodeDatas}
-              </button>
-            ))}
+            {getObjectKeys(actorID ? nodeParams : pipelineParams).map(
+              (nodeDatas) => (
+                <button
+                  key={uuid()}
+                  className="menuButton"
+                  onClick={(e) => {
+                    appendNode(
+                      e,
+                      "customNode",
+                      actorID ? nodeData[nodeDatas] : pipelineData[nodeDatas]
+                    );
+                  }}
+                >
+                  {nodeDatas}
+                </button>
+              )
+            )}
           </div>
         )}
         {isShowNodeMenu && (
