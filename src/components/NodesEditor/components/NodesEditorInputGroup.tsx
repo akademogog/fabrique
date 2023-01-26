@@ -3,7 +3,7 @@ import { useAppDispatch } from '@/store/hooks';
 import { changeActorInputData, removeActorInput } from '@/store/slicers/actorsSlicer';
 import { changePipelineInputData, removePipelineInput } from '@/store/slicers/pipelinesSlicer';
 import { NodeInputType, portData, portDatas } from '@/types/node.types';
-import React from 'react'
+import React, { useState } from 'react'
 import uuid from 'react-uuid'
 import style from '../NodesEditor.module.scss';
 import IconDelete from '@/assets/img/icon-delete.svg';
@@ -76,10 +76,9 @@ export const NodesEditorInputGroup: React.FC<NodesEditorInputGroupProps> = ({are
                         label="name"
                         isDisabled={i === 1}
                         placeholder="name"
-                        value={input.name}
-                        onChange={(e) =>
-                          onInputChange(e, indx, inputsType, "name")
-                        }
+                        defaultValue={input.name}
+                        onBlur={(e) =>
+                            onInputChange(e, indx, inputsType, "name")}
                       />
                       <UISelect
                         className={style.nodesEditorInputSelect}
